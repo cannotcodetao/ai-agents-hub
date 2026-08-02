@@ -283,7 +283,7 @@ export default function App() {
               <div>
                 <div className="section-label mb-1">全部项目</div>
                 <h2 className="heading-display text-2xl text-ink lg:text-3xl">
-                  完整项目列表
+                  {activeCategory === 'all' ? '完整项目列表' : categoryMap[activeCategory]?.nameZh ?? '完整项目列表'}
                 </h2>
               </div>
               <div className="flex items-center gap-4">
