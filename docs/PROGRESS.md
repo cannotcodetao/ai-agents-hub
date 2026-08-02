@@ -1,5 +1,38 @@
 # 进度日志（progress）
 
+## 2026-08-02 补刀（3 项 UI 修复）
+
+针对用户截图与反馈，在 Phase 11 已推送的基础上再做 3 处修改：
+
+### 1. 删除 Token 卡片右上角「已验证」badge ✅
+- `src/components/Tutorials.tsx`
+  - 移除 Token 卡片 JSX 里的 badge `<span>` 渲染
+  - 移除不再使用的 `toneClasses` 常量
+  - 保留 `TOKEN_PLATFORMS` 数据里的 `badge` / `tone` 字段，以备后续需要
+
+### 2. 进入教程页自动滚动到「下载工具」区 ✅
+- `src/components/Tutorials.tsx`
+  - 顶部新增 `import { useEffect } from 'react'`
+  - `Tutorials` 组件内加 `useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [])`
+  - 根因：App.tsx 用条件渲染切换 `home` / `tutorials` 视图，浏览器会保留之前的 `window.scrollY`；之前点「入门教程」时如果首页滚动到下方，进入教程页就会直接落在「免费 Token 与 API 配置」区域
+
+### 3. 教程页侧栏分类按钮可跨视图跳转 ✅
+- `src/components/Sidebar.tsx`
+  - SidebarProps 加 `onNavigateHomeCategory?: (id: string) => void`
+  - 组件内新增 `handleCategoryClick(id)`：在教程页且传入回调时，先 `onClose()` 再调用跨视图回调；否则保持原 `onCategoryChange` 行为
+  - 「全部」与每个分类 `<button>` 的 `onClick` 都改为 `handleCategoryClick`
+- `src/App.tsx`
+  - 新增 `handleNavigateHomeCategory(id)`：`setView('home')` + `setActiveCategory(id)` + `setSearchQuery('')` + 双 `rAF` + 80ms `setTimeout` → `scrollIntoView('#explore')`
+  - Sidebar 调用点传入 `onNavigateHomeCategory={handleNavigateHomeCategory}`
+
+### 校验与构建
+- `check_caps_dup.py` → PASS w/ warnings（222/222 差异化，0 撞车）
+- `check_data_sync.py` → PASS（data/ == public/data/）
+- `npm run build` → 通过
+
+### 提交
+- `0f93377` 之后的 commit 已 push origin/main（commit 信息见下）
+
 ## 2026-08-02 新窗口执行（教程页 6 任务 · Phase 11）
 
 按 `docs/TUTORIALS_TASKS_2026-08-02.md` 的执行 prompt 完成 A / B / B-4 / C / D / E / F-2，全部落地代码并通过构建。

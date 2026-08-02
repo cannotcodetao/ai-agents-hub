@@ -21,6 +21,8 @@ interface SidebarProps {
   currentView?: 'home' | 'tutorials';
   /** 切回首页并滚动到指定锚点（锚点 ID 只存在于首页组件中） */
   onNavigateHome?: (anchor: string) => void;
+  /** 在教程页点击分类时，先切回首页再执行分类筛选与滚动（不传递则退回原 onCategoryChange） */
+  onNavigateHomeCategory?: (id: string) => void;
 }
 
 // 分类色点 · 参考 skills-report.html 的多色谱系，每类一个识别色
@@ -50,7 +52,7 @@ export default function Sidebar({
   search, onSearch, sort, onSortChange,
   activeCategory, onCategoryChange, categories, agentCounts,
   totalCount, resultCount, totalStars, isOpen, onClose, onTutorials,
-  currentView = 'home', onNavigateHome,
+  currentView = 'home', onNavigateHome, onNavigateHomeCategory,
 }: SidebarProps) {
   // 快捷导航：锚点区块只渲染在首页，教程页点击需先切回首页再滚动
   const goAnchor = (e: MouseEvent<HTMLAnchorElement>, anchor: string) => {
@@ -58,6 +60,16 @@ export default function Sidebar({
     e.preventDefault();
     onClose();
     onNavigateHome(anchor);
+  };
+
+  // 分类 TOC：教程页点击需先切回首页，再执行筛选 + 滚动到 #explore
+  const handleCategoryClick = (id: string) => {
+    if (currentView === 'tutorials' && onNavigateHomeCategory) {
+      onClose();
+      onNavigateHomeCategory(id);
+    } else {
+      onCategoryChange(id);
+    }
   };
 
   return (
@@ -168,7 +180,7 @@ export default function Sidebar({
         {/* 分类 TOC */}
         <nav className="flex-1 overflow-y-auto px-3 pb-4">
           <button
-            onClick={() => onCategoryChange('all')}
+            onClick={() => handleCategoryClick('all')}
             className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               activeCategory === 'all'
                 ? 'bg-accent/10 text-accent'
@@ -186,7 +198,7 @@ export default function Sidebar({
             return (
               <button
                 key={c.id}
-                onClick={() => onCategoryChange(c.id)}
+                onClick={() => handleCategoryClick(c.id)}
                 className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                   active
                     ? 'bg-accent/10 text-accent'

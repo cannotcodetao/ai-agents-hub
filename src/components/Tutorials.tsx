@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ArrowLeft, Download, ExternalLink, Terminal, BookOpen } from 'lucide-react';
 
 interface TutorialsProps {
@@ -35,12 +36,6 @@ const TOKEN_PLATFORMS = [
   { name: '天翼 AI（中国电信）', link: 'https://www.ctyun.cn/', note: '国资云大模型服务，安全合规 + 等保三级。DeepSeek / 通义 / 智谱 API 聚合，政企首选。', badge: '已验证·有条件', tone: 'warn' },
 ];
 
-const toneClasses: Record<string, string> = {
-  ok: 'bg-emerald-50 text-emerald-700',
-  warn: 'bg-amber-50 text-amber-700',
-  wait: 'bg-slate-100 text-slate-500',
-};
-
 function InstallSteps({ title, steps }: { title: string; steps: string[] }) {
   return (
     <div className="rounded-2xl border border-line bg-white p-6 shadow-sm">
@@ -64,6 +59,11 @@ function InstallSteps({ title, steps }: { title: string; steps: string[] }) {
 }
 
 export default function Tutorials({ onBack }: TutorialsProps) {
+  // 切到教程页时回到顶部，避免继承首页滚动位置导致直接落在 Token 区
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   return (
     <div className="container-x py-10">
       {/* 头部 + 返回 */}
@@ -153,12 +153,7 @@ export default function Tutorials({ onBack }: TutorialsProps) {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {TOKEN_PLATFORMS.map((p) => (
             <div key={p.name} className="flex flex-col rounded-xl border border-line bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="font-medium text-ink">{p.name}</h3>
-                <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${toneClasses[p.tone]}`}>
-                  {p.badge}
-                </span>
-              </div>
+              <h3 className="font-medium text-ink">{p.name}</h3>
               <p className="mt-2 flex-1 text-xs leading-relaxed text-ink2">{p.note}</p>
               <a
                 href={p.link}

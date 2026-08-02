@@ -42,6 +42,7 @@
 | 9 | **本轮 · 新项目入库** - `Hao0321/video-autopilot-kit` 入 `video` 分类 + `docs/CONTRIBUTING.md` SOP + `scripts/check_caps_dup.py` + `scripts/check_data_sync.py` + 修 6 条历史撞车 | complete（commit `3095291`） |
 | 10 | **本轮 · 国内镜像源** - 等用户发参考图后选定 `mirrors: {label,url}[]` 建模 / gitee + 第三方代理混合 / 前端 Modal 暴露 | blocked（等待用户发图） |
 | 11 | **教程页 6 任务（新窗口执行）** - A 侧栏锚点修复 / B 删营销话术 / B-4 Trae·WorkBuddy 特征化介绍 / C Download 图标+官网链接 / D 按钮文案 / E Token 平台改介绍 / F-2 回写文档 | complete（2026-08-02 新窗口执行；caps/sync 校验 PASS，`npm run build` 通过；已随 `c3776a9` 推送 origin/main） |
+| 11-1 | **教程页补刀** - ① 删除 Token 卡片「已验证」badge / ② 进入教程页自动滚到顶部 / ③ 教程页侧栏分类按钮可跨视图跳转 | complete（2026-08-02 同一会话修复；build 通过；见 commit） |
 
 ## 数据现状（任务 1 依据）
 - 221 个项目，原仅 33 种 coreCapabilities 组合（重复率 85%）

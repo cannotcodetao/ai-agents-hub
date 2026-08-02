@@ -161,6 +161,20 @@ export default function App() {
     });
   };
 
+  // 教程页点击侧栏分类：切回首页 + 应用分类筛选 + 滚动到 #explore
+  const handleNavigateHomeCategory = (id: string) => {
+    setView('home');
+    setActiveCategory(id);
+    setSearchQuery('');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+      });
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-paper flex items-center justify-center">
@@ -209,6 +223,7 @@ export default function App() {
         onTutorials={() => setView('tutorials')}
         currentView={view}
         onNavigateHome={handleNavigateHome}
+        onNavigateHomeCategory={handleNavigateHomeCategory}
       />
 
       {/* 移动端汉堡按钮 */}
