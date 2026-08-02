@@ -1,0 +1,42 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Planning / docs (not part of project source)
+# docs/ is tracked (内部规划文档索引 + SOP + 当前活跃规划 + 历史归档脚本与 md)
+# 仅历史规划下的临时 json 数据不入库：
+docs/planning-archive/**/*.json
+.planning/
+
+# Research findings only at repo root is ignored; docs/FINDINGS.md is tracked
+/findings.md
+
+# Temporary scripts / data
+scripts/all_batches_data.json
+scripts/repo_data.json
+scripts/set-yesterday-baseline.mjs
+
+# Backup & scrape artifacts
+*.bak
+temp/trending.html
