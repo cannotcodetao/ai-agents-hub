@@ -50,8 +50,13 @@
 - **`official` 字段变为未引用数据**：任务 C 删掉「官网 ↗」后，TOOLS 里的 `official` 不再被 JSX 使用。按「不动 name/invite/official/os」的要求予以保留，未清理。
 - **`#trending-github` 条件渲染**：该区块仅在 `trendingData.items.length > 0` 时渲染，否则回退 `Spotlight`（无此 id）。此时点击侧栏「GitHub 今日趋势」会切回首页但不滚动（静默降级，不报错）。如需兜底可在找不到锚点时回落到 `#trending`。
 
-### 未完成
-- **git commit + push 未执行**：项目根目录 `.git` 已不存在（`git status` → `fatal: not a git repository`），承接 2026-08-02 上一轮的 git 事故且状态已恶化（此前是 ACL 锁死，现在目录直接消失）。本轮所有改动仅在本地工作区，待仓库恢复后统一提交。
+### git 事故收尾（已解决，但历史被重置）
+- 执行本轮任务时 `.git` 目录已彻底消失（`git status` → `fatal: not a git repository`），是 2026-08-02 上一轮 ACL 锁死事故的恶化状态；远端经 SSH 探测可达，彼时 `origin/main = d273c6b`
+- **用户自行修复**：就地 `git init` 重建仓库，以单条 `Initial commit: ai-agents-hub project`（`c3776a9`）提交全量工作区；remote 改为 HTTPS `https://github.com/cannotcodetao/ai-agents-hub.git` 并已推送，本地 `main` 与 `origin/main` 同为 `c3776a9`
+- 本轮 7 个文件（`src/App.tsx`、`src/components/Sidebar.tsx`、`src/components/Tutorials.tsx`、`docs/PROGRESS.md`、`docs/TASK_PLAN.md`、`docs/PLANNING_2026-08-02.md`、`docs/TUTORIALS_TASKS_2026-08-02.md`）的改动已逐一核对，全部包含在该提交中
+- 入库范围复核：72 个跟踪文件，未误入 `dist/` / `node_modules/` / `*.bak`；`data/agents.json` 与 `public/data/agents.json` 双份均在
+- ⚠️ **历史丢失**：`d273c6b` 及此前的 `4e5368f` / `44011df` / `3095291` / `d598aa2` 等提交已不在 main 分支上，仓库变成单提交历史。GitHub 侧通常还会保留一段时间的悬空对象，若要找回旧历史需尽快通过 GitHub Events API 或联系支持处理
+- 遗留：根目录有未跟踪文件 `git-push-guide.html`（非本轮产物），待决定入库或删除
 
 ## 2026-08-02 会话（规划修订 + git 事故）
 - 用户要求：① 尝试按推荐顺序修复 git 仓库事故；② Trae IDE / WorkBuddy 介绍改为特征化 1-2 句；③ 原任务 F（badge 简化）改为 F-2（更新执行 prompt 与项目进度文件）

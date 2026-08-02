@@ -41,7 +41,7 @@
 | 8 | **本轮 · 搜索栏 UX** - searchQuery 变化时自动 scrollIntoView('#explore')；可选叠加 Header 状态条 | complete（commit `44011df`） |
 | 9 | **本轮 · 新项目入库** - `Hao0321/video-autopilot-kit` 入 `video` 分类 + `docs/CONTRIBUTING.md` SOP + `scripts/check_caps_dup.py` + `scripts/check_data_sync.py` + 修 6 条历史撞车 | complete（commit `3095291`） |
 | 10 | **本轮 · 国内镜像源** - 等用户发参考图后选定 `mirrors: {label,url}[]` 建模 / gitee + 第三方代理混合 / 前端 Modal 暴露 | blocked（等待用户发图） |
-| 11 | **教程页 6 任务（新窗口执行）** - A 侧栏锚点修复 / B 删营销话术 / B-4 Trae·WorkBuddy 特征化介绍 / C Download 图标+官网链接 / D 按钮文案 / E Token 平台改介绍 / F-2 回写文档 | complete（2026-08-02 新窗口执行；caps/sync 校验 PASS，`npm run build` 通过；**commit/push 待 git 仓库恢复**） |
+| 11 | **教程页 6 任务（新窗口执行）** - A 侧栏锚点修复 / B 删营销话术 / B-4 Trae·WorkBuddy 特征化介绍 / C Download 图标+官网链接 / D 按钮文案 / E Token 平台改介绍 / F-2 回写文档 | complete（2026-08-02 新窗口执行；caps/sync 校验 PASS，`npm run build` 通过；已随 `c3776a9` 推送 origin/main） |
 
 ## 数据现状（任务 1 依据）
 - 221 个项目，原仅 33 种 coreCapabilities 组合（重复率 85%）
@@ -55,4 +55,4 @@
 - 上传服务器：4 任务已全部完成，待用户确认是否现在上传 dist/（存在占位图与待验证 Token 两项待办）
 - **本轮 Phase 8 叠加选项**：B-1 自动滚动之外是否还要 Header 状态条（用户没表态默认不上）
 - **本轮 Phase 10 等待**：镜像源方案等用户发参考图，先不动数据与 UI
-- **git 事故（2026-08-02，已恶化）**：此前是 `.git` ACL 锁死；新窗口执行 Phase 11 时复查发现 **`.git` 目录已完全不存在**，`git status` 报 `fatal: not a git repository`。Phase 11 的全部代码 + 文档改动仅在本地工作区，未提交。恢复方案待用户裁决（重新 clone 远端后回填工作区 / 就地 `git init` + 重连 remote）
+- **git 事故（2026-08-02，已解决但历史被重置）**：`.git` 先 ACL 锁死、后整个目录消失；用户就地 `git init` 重建并以单条 `Initial commit`（`c3776a9`）推送 HTTPS remote，Phase 11 全部改动已入库。**代价：`d273c6b` 之前的提交历史不在 main 上了**，仓库现为单提交。待办：① 决定是否尝试从 GitHub 悬空对象找回旧历史；② 根目录未跟踪文件 `git-push-guide.html` 入库或删除

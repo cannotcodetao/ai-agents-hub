@@ -2,7 +2,7 @@
 
 > 用途：把下面 `<EXECUTION_PROMPT>` 标签里的内容**完整复制**到新窗口，让 AI 按步骤执行。
 > 决策（2026-08-02 修订）：A ✅ B ✅ C ✅ D ✅ E ✅ F 取消 badge 改造，改为 **F-2 · 更新执行 prompt 与项目进度文件** ✅；另新增 **B-4 · Trae IDE / WorkBuddy 介绍改特征化 1-2 句** ✅。
-> **执行状态（2026-08-02 新窗口）：A / B / B-4 / C / D / E / F-2 均「已执行」**；校验脚本 PASS、`npm run build` 通过；`git commit + push` 因本地 `.git` 目录缺失阻塞，待仓库恢复后补。
+> **执行状态（2026-08-02 新窗口）：A / B / B-4 / C / D / E / F-2 均「已执行」**；`check_caps_dup` / `check_data_sync` PASS、`npm run build` 通过；改动已随提交 `c3776a9` 推送 origin/main（期间遭遇 `.git` 目录丢失，用户重建仓库，旧提交历史被重置，详见 `docs/PROGRESS.md`）。
 > 当前会话**仅交付 prompt**，不执行。
 
 ---
