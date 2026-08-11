@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-10T02:05:13.255Z",
+  "updatedAt": "2026-08-11T02:00:15.952Z",
   "source": "github-search-api",
   "strategy": "recently-created-updated-high-star-ai-repos",
   "total": 25,
@@ -12,7 +12,7 @@
       "description": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 239032,
+      "stars": 239260,
       "starsToday": 0
     },
     {
@@ -23,7 +23,7 @@
       "description": "Langflow is a powerful tool for building and deploying AI-powered agents and workflows.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 152988,
+      "stars": 153036,
       "starsToday": 0
     },
     {
@@ -34,7 +34,7 @@
       "description": "Build Agentic workflows, RAG pipelines, with rich AI model and tool support on one collaborative workspace. Deploy on cloud, VPC, or self-hosted, so teams move from prototype to production without rebuilding the stack.",
       "language": "TypeScript",
       "languageColor": "#3178c6",
-      "stars": 151881,
+      "stars": 152007,
       "starsToday": 0
     },
     {
@@ -45,7 +45,7 @@
       "description": "The agent engineering platform.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 143817,
+      "stars": 143919,
       "starsToday": 0
     },
     {
@@ -56,7 +56,7 @@
       "description": "FULL Augment Code, Claude Code, Cluely, CodeBuddy, Comet, Cursor, Devin AI, Junie, Kiro, Leap.new, Lovable, Manus, NotionAI, Orchids.app, Perplexity, Poke, Qoder, Replit, Same.dev, Trae, Traycer AI, VSCode Agent, Warp.dev, Windsurf, Xcode, Z.ai Code, Dia & v0. (And other Open Sourced) System Prompts, Internal Tools & AI Models",
       "language": "",
       "languageColor": "#6e7681",
-      "stars": 142684,
+      "stars": 142709,
       "starsToday": 0
     },
     {
@@ -67,7 +67,7 @@
       "description": "A complete AI agency at your fingertips - From frontend wizards to Reddit community ninjas, from whimsy injectors to reality checkers. Each agent is a specialized expert with personality, processes, and proven deliverables.",
       "language": "Shell",
       "languageColor": "#89e051",
-      "stars": 140776,
+      "stars": 141870,
       "starsToday": 0
     },
     {
@@ -78,7 +78,7 @@
       "description": "100+ AI Agents, Agent Skills and RAG Apps - Free and Open Source.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 131774,
+      "stars": 131989,
       "starsToday": 0
     },
     {
@@ -89,7 +89,7 @@
       "description": "🌐 Make websites accessible for AI agents. Automate tasks online with ease.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 108497,
+      "stars": 108664,
       "starsToday": 0
     },
     {
@@ -100,7 +100,7 @@
       "description": "An open-source AI agent that brings the power of Gemini directly into your terminal.",
       "language": "TypeScript",
       "languageColor": "#3178c6",
-      "stars": 106433,
+      "stars": 106447,
       "starsToday": 0
     },
     {
@@ -111,7 +111,7 @@
       "description": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. A /graphify skill for Claude Code, Cursor, Codex, and Gemini CLI: local deterministic AST parsing, every edge explained, no vector store.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 104636,
+      "stars": 105012,
       "starsToday": 0
     },
     {
@@ -122,7 +122,7 @@
       "description": "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 99389,
+      "stars": 100174,
       "starsToday": 0
     },
     {
@@ -133,7 +133,7 @@
       "description": "🪨 why use many token when few token do trick — Claude Code skill that cuts 65% of tokens by talking like caveman",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 97080,
+      "stars": 97315,
       "starsToday": 0
     },
     {
@@ -144,7 +144,7 @@
       "description": "Persistent Context Across Sessions for Every Agent –  Captures everything your agent does during sessions, compresses it with AI, and injects relevant context back into future sessions. Works with Claude Code, OpenClaw, Codex, Gemini, Hermes, Copilot, OpenCode + More",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 90217,
+      "stars": 90338,
       "starsToday": 0
     },
     {
@@ -155,7 +155,7 @@
       "description": "RAGFlow is a leading open-source Retrieval-Augmented Generation (RAG) engine that fuses cutting-edge RAG with Agent capabilities to create a superior context layer for LLMs",
       "language": "Go",
       "languageColor": "#00ADD8",
-      "stars": 87133,
+      "stars": 87201,
       "starsToday": 0
     },
     {
@@ -166,7 +166,7 @@
       "description": "AI agent toolkit: unified LLM API, agent loop, TUI, coding agent CLI",
       "language": "TypeScript",
       "languageColor": "#3178c6",
-      "stars": 86057,
+      "stars": 86725,
       "starsToday": 0
     },
     {
@@ -177,7 +177,7 @@
       "description": "Production-grade engineering skills for AI coding agents.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 85178,
+      "stars": 85770,
       "starsToday": 0
     },
     {
@@ -188,7 +188,7 @@
       "description": "🤯 LobeHub is your Chief Agent Operator, organizing your agents into 7×24 operations by hiring, scheduling, and reporting on your entire AI team.",
       "language": "TypeScript",
       "languageColor": "#3178c6",
-      "stars": 81458,
+      "stars": 81476,
       "starsToday": 0
     },
     {
@@ -199,7 +199,7 @@
       "description": "An open-source long-horizon SuperAgent harness that researches, codes, and creates. With the help of sandboxes, memories, tools, skill, subagents and message gateway, it handles different levels of tasks that could take minutes to hours.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 79614,
+      "stars": 79684,
       "starsToday": 0
     },
     {
@@ -210,73 +210,73 @@
       "description": "Transforms complex documents like PDFs and Office docs into LLM-ready markdown/JSON for your Agentic workflows.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 77216,
+      "stars": 77306,
       "starsToday": 0
     },
     {
       "rank": 20,
+      "name": "awesome-claude-skills",
+      "fullName": "ComposioHQ/awesome-claude-skills",
+      "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "description": "A curated list of awesome Claude Skills, resources, and tools for customizing Claude AI workflows",
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "stars": 72229,
+      "starsToday": 0
+    },
+    {
+      "rank": 21,
       "name": "Agent-Reach",
       "fullName": "Panniantong/Agent-Reach",
       "url": "https://github.com/Panniantong/Agent-Reach",
       "description": "Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, XiaoHongShu — one CLI, zero API fees.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 69764,
+      "stars": 70318,
       "starsToday": 0
     },
     {
-      "rank": 21,
+      "rank": 22,
       "name": "ruflo",
       "fullName": "ruvnet/ruflo",
       "url": "https://github.com/ruvnet/ruflo",
       "description": "🌊 The original agent meta-harness. Deploy intelligent multi-player swarms, coordinate autonomous workflows, and build conversational AI systems. Features adaptive memory, self-learning intelligence, RAG integration, and native Claude Code / Codex / Hermes and many more Integrated",
       "language": "TypeScript",
       "languageColor": "#3178c6",
-      "stars": 67510,
+      "stars": 67585,
       "starsToday": 0
     },
     {
-      "rank": 22,
+      "rank": 23,
       "name": "headroom",
       "fullName": "headroomlabs-ai/headroom",
       "url": "https://github.com/headroomlabs-ai/headroom",
       "description": "Compress tool outputs, logs, files, and RAG chunks before they reach the LLM. 20% fewer tokens for coding agents, 60-95% fewer tokens for JSON, same answers. Library, proxy, MCP server.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 65656,
+      "stars": 65826,
       "starsToday": 0
     },
     {
-      "rank": 23,
+      "rank": 24,
       "name": "mem0",
       "fullName": "mem0ai/mem0",
       "url": "https://github.com/mem0ai/mem0",
       "description": "Universal memory layer for AI Agents",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 62886,
+      "stars": 62960,
       "starsToday": 0
     },
     {
-      "rank": 24,
+      "rank": 25,
       "name": "last30days-skill",
       "fullName": "mvanhorn/last30days-skill",
       "url": "https://github.com/mvanhorn/last30days-skill",
       "description": "AI agent skill that researches any topic across Reddit, X, YouTube, HN, Polymarket, and the web - then synthesizes a grounded summary",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 57766,
-      "starsToday": 0
-    },
-    {
-      "rank": 25,
-      "name": "private-gpt",
-      "fullName": "zylon-ai/private-gpt",
-      "url": "https://github.com/zylon-ai/private-gpt",
-      "description": "Complete API layer for private AI applications on local models: RAG, skills, tools, MCP, text-to-sql, and more. Works with any OpenAI-compatible inference server.",
-      "language": "Python",
-      "languageColor": "#3572A5",
-      "stars": 57418,
+      "stars": 57845,
       "starsToday": 0
     }
   ]
