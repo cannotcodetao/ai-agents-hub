@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>宝塔服务器安全加固操作清单 · ai-agents-hub（定稿）</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --card: #ffffff; --ink: #1f2329; --ink2: #4b5563; --ink3: #8a93a2;
+    --line: #e5e7eb; --accent: #2563eb; --warn: #d97706; --danger: #dc2626; --ok: #059669;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6; padding: 32px 16px; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  header.banner { background: linear-gradient(135deg, #0f172a, #334155); color: #fff; border-radius: 14px; padding: 24px 28px; margin-bottom: 22px; }
+  header.banner h1 { margin: 0 0 6px; font-size: 22px; }
+  header.banner p { margin: 4px 0; color: #cbd5e1; font-size: 13px; }
+  .env { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .env span { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 999px; font-size: 12px; }
+  .alert { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 10px; padding: 14px 18px; font-size: 13px; margin-bottom: 22px; }
+  .alert b { color: #b91c1c; }
+  h2 { font-size: 18px; margin: 26px 0 12px; padding-left: 10px; border-left: 4px solid var(--accent); }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: top; }
+  th { background: #f1f5f9; color: var(--ink2); font-weight: 600; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  .lv { font-weight: 700; white-space: nowrap; }
+  .lv.high { color: var(--danger); } .lv.mid { color: var(--warn); } .lv.low { color: var(--ink3); }
+  .status { white-space: nowrap; font-weight: 600; }
+  .st-todo { color: var(--warn); } .st-done { color: var(--ok); }
+  code { background: #f1f5f9; padding: 1px 6px; border-radius: 4px; font-size: 12px; color: #be123c; }
+  .steps { color: var(--ink2); }
+  .warn-cell { color: #b45309; font-size: 12px; }
+  .order { background: var(--card); border-radius: 12px; padding: 4px 20px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .order li { margin: 8px 0; font-size: 13px; }
+  .order b { color: var(--accent); }
+  .extra { color: var(--ink2); }
+  footer { text-align: center; color: var(--ink3); font-size: 12px; margin-top: 30px; }
+  @media print { body { background: #fff; padding: 0; } table, .order { box-shadow: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="banner">
+    <h1>宝塔服务器安全加固操作清单（定稿）</h1>
+    <p>站点：ai-agents-hub · 部署路径 <code>/www/wwwroot/ai-agents_hub</code> · 服务器 <code>124.221.116.181</code></p>
+    <p>定稿时间：2026-08-03 · 执行方式：手动（用户在宝塔面板 / SSH 逐项操作）</p>
+    <div class="env">
+      <span>Web：Nginx</span>
+      <span>架构：纯静态站点（服务器另装 PHP 8.2 / MySQL，待确认是否业务在用）</span>
+      <span>扫描：63 分 / 20 风险 → 19 待处理 + 1 已解决</span>
+    </div>
+  </header>
+
+  <div class="alert">
+    <b>⚠️ 执行前必读（避免把自己锁在服务器外）：</b>
+    <ol style="margin:8px 0 0; padding-left:20px;">
+      <li><b>开防火墙 / 改 SSH 端口前，必须先把「新 SSH 端口、面板新端口、80、443」加入放行列表</b>，否则开启后无法连接。</li>
+      <li><b>改 sudoers（#14）前，先确认存在一个「需要密码」的 sudo 用户</b>；云厂商的 <code>90-cloud-init-users</code> 是初始化创建的，删 NOPASSWD 前留好后路，否则可能失去 sudo 权限。</li>
+      <li><b>改 SSH 配置（#9/#10/#13）后，务必开一个新终端测试能登入，再断开旧连接</b>；重启 sshd 不会踢掉当前会话。</li>
+      <li>移除 SUID/SGID（#1）后，非 root 将无法 <code>mount</code> 等；确保你已有 root SSH 再操作。</li>
+    </ol>
+  </div>
+
+  <h2>执行顺序建议（降低锁死 / 误操作风险）</h2>
+  <ol class="order">
+    <li><b>SSH 加固先测通</b>：#9 空闲超时、#10 登录超时、#13 Protocol 2 —— 改完 <code>systemctl restart sshd</code>，<u>新终端验证可登录</u>再继续。</li>
+    <li><b>面板端口</b>：#4 改面板端口（安全组先放行新端口）。</li>
+    <li><b>开防火墙</b>：#2 系统防火墙（已放行的端口见上方警示①）。</li>
+    <li><b>账号提权保护</b>：#14 sudoers NOPASSWD（先留密码 sudo 用户）、#18 wheel su（先确认自己在 wheel 组）。</li>
+    <li><b>特权文件</b>：#1 SUID/SGID（确认有 root 途径后）。</li>
+    <li><b>密码策略</b>：#6 密码复用、#11 pwquality、#12 PASS_MIN_DAYS。</li>
+    <li><b>服务清理</b>：#3 MySQL 3306（确认不用再处理）、#7 PHP display_errors、#15 TCP Wrappers（可选）、#16 卸载 telnet。</li>
+    <li><b>会话/超时</b>：#17 命令行 TMOUT、#8 禁 Ping（按需）。</li>
+    <li><b>网络防护</b>：#19 TCP SYN cookie。</li>
+    <li><b>监控告警</b>：#5 面板登录告警。</li>
+  </ol>
+
+  <h2>实际风险操作清单（19 项待处理）</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>风险项</th><th>等级</th><th>解决步骤</th><th>注意事项</th><th>状态</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td><td>存在 SUID/SGID 特权文件（/usr/bin/chage、gpasswd、chfn、chsh、newgrp、/bin/mount、/bin/umount；/usr/bin/write）</td>
+        <td class="lv mid">中</td>
+        <td class="steps"><code>chmod u-s /usr/bin/chage /usr/bin/gpasswd /usr/bin/chfn /usr/bin/chsh /usr/bin/newgrp /bin/mount /bin/umount</code><br><code>chmod g-s /usr/bin/write</code></td>
+        <td class="warn-cell">系统自带二进制；移除后非 root 无法 mount。确保有 root SSH 再操作。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>2</td><td>未开启系统防火墙，端口全暴露</td>
+        <td class="lv high">高</td>
+        <td class="steps">安全 → 系统防火墙 → <b>先加端口规则放行</b>（SSH 新端口 / 面板新端口 / 80 / 443）→ 再开防火墙开关</td>
+        <td class="warn-cell">必须先放行再开启，否则锁死服务器。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>3</td><td>MySQL 端口 3306 可被任意访问</td>
+        <td class="lv mid">中</td>
+        <td class="steps">安全 → 删除 3306 放行；或限定来源 IP；或装 Fail2ban 保护</td>
+        <td class="warn-cell">先确认 MySQL 是否真被业务使用（站点纯静态可能未用）。</td>
+        <td class="status st-todo">待确认</td>
+      </tr>
+      <tr>
+        <td>4</td><td>面板端口为默认 8888</td>
+        <td class="lv mid">中</td>
+        <td class="steps">设置 → 修改默认面板端口（如 28888）；有安全组先放行新端口</td>
+        <td class="warn-cell">改后旧端口失效，记好新端口。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>5</td><td>未开启面板登录告警</td>
+        <td class="lv low">低</td>
+        <td class="steps">设置 → 告警通知 → 告警列表 → 添加任务 → 任务类型「面板登录告警」→ 开启</td>
+        <td class="warn-cell">—</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>6</td><td>未限制密码重复使用次数</td>
+        <td class="lv mid">中</td>
+        <td class="steps"><code>cp -p /etc/pam.d/system-auth /etc/pam.d/system-auth.bak</code><br>编辑该文件，在 <code>password sufficient</code> 后加 <code>remember=3</code></td>
+        <td class="warn-cell">先备份再改。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>7</td><td>PHP 8.2 未关闭 display_errors</td>
+        <td class="lv low">低</td>
+        <td class="steps">软件商店 → 已装 PHP 8.2 → 配置修改 → display_errors 改为关闭 → 保存</td>
+        <td class="warn-cell">服务器装有 PHP 8.2，若站点未用可后续评估卸载。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>8</td><td>未开启禁 Ping</td>
+        <td class="lv low">低</td>
+        <td class="steps">安全 → 禁 Ping → 开启（按需）</td>
+        <td class="warn-cell">开启后无法 ping 通，不影响网站访问。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>9</td><td>SSH 空闲超时 = 0（应 600-900）</td>
+        <td class="lv mid">中</td>
+        <td class="steps">sshd_config 设 <code>ClientAliveInterval 600</code> → <code>systemctl restart sshd</code></td>
+        <td class="warn-cell">重启后开新终端验证可登再继续。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>10</td><td>未启用 SSH 登录超时（LoginGraceTime）</td>
+        <td class="lv mid">中</td>
+        <td class="steps">sshd_config 设 <code>LoginGraceTime 60</code> → <code>systemctl restart sshd</code></td>
+        <td class="warn-cell">同 #9 注意项。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>11</td><td>/etc/security/pwquality.conf 未设 minclass</td>
+        <td class="lv mid">中</td>
+        <td class="steps">编辑 pwquality.conf，设 <code>minclass=3</code></td>
+        <td class="warn-cell">—</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>12</td><td>/etc/login.defs 未设 PASS_MIN_DAYS≥7</td>
+        <td class="lv mid">中</td>
+        <td class="steps">login.defs 设 <code>PASS_MIN_DAYS 7</code>；再 <code>chage --mindays 7 root</code></td>
+        <td class="warn-cell">—</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>13</td><td>SSH 未明确使用 Protocol 2</td>
+        <td class="lv mid">中</td>
+        <td class="steps">sshd_config 加/改 <code>Protocol 2</code> → <code>systemctl restart sshd</code></td>
+        <td class="warn-cell">现代 OpenSSH 默认即 2，确认无 <code>Protocol 1</code> 即可。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>14</td><td>sudoers 存在 NOPASSWD 标记</td>
+        <td class="lv high">高</td>
+        <td class="steps">打开 <code>/etc/sudoers</code> 与 <code>/etc/sudoers.d/90-cloud-init-users</code>，删除或注释含 <code>NOPASSWD</code> 的行</td>
+        <td class="warn-cell"><b>高危</b>：90-cloud-init-users 是云厂商初始化创建；删前先确保有密码 sudo 用户，否则可能失去 sudo 权限。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>15</td><td>未安装 TCP Wrappers</td>
+        <td class="lv low">低</td>
+        <td class="steps">CentOS: <code>yum install tcp_wrappers</code>；Debian/Ubuntu: <code>apt-get install tcpd</code></td>
+        <td class="warn-cell">现代系统多已弃用，可选。</td>
+        <td class="status st-todo">可选</td>
+      </tr>
+      <tr>
+        <td>16</td><td>已安装 telnet 客户端（不安全）</td>
+        <td class="lv low">低</td>
+        <td class="steps">CentOS: <code>yum remove telnet</code>；Debian/Ubuntu: <code>apt-get remove telnet</code></td>
+        <td class="warn-cell">明文协议，建议卸载。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>17</td><td>未配置命令行超时退出</td>
+        <td class="lv low">低</td>
+        <td class="steps">/etc/profile 追加 <code>export TMOUT=300</code>（≤600）→ <code>source /etc/profile</code></td>
+        <td class="warn-cell">—</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>18</td><td>未禁用 wheel 组外用户 su 为 root</td>
+        <td class="lv low">低</td>
+        <td class="steps">/etc/pam.d/su 加 <code>auth required pam_wheel.so</code>；需 su 的用户加入 wheel：<code>addgroup wheel</code>（若不存在）、<code>gpasswd -a 用户名 wheel</code></td>
+        <td class="warn-cell">启用前确认自己在 wheel 组或有其他 root 途径。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+      <tr>
+        <td>19</td><td>未开启 TCP SYN cookie 保护</td>
+        <td class="lv low">低</td>
+        <td class="steps">/etc/sysctl.conf 加 <code>net.ipv4.tcp_syncookies=1</code> → <code>sysctl -p</code></td>
+        <td class="warn-cell">缓解 SYN Flood。</td>
+        <td class="status st-todo">待执行</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>已解决项</h2>
+  <table>
+    <thead><tr><th>#</th><th>风险项</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>20</td><td>（用户手动处理，未提供详情）</td><td class="status st-done">已解决</td></tr>
+    </tbody>
+  </table>
+
+  <h2>补充加固建议（非本次扫描项，可选）</h2>
+  <table>
+    <thead><tr><th>项目</th><th>操作</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td class="extra">HTTPS 强制跳转</td><td class="extra">站点 → SSL → 申请 Let's Encrypt → 开启「强制 HTTPS」</td><td class="extra">提升传输安全，建议做</td></tr>
+      <tr><td class="extra">安全响应头</td><td class="extra">站点配置加 <code>add_header X-Frame-Options "SAMEORIGIN"</code>；<code>X-Content-Type-Options "nosniff"</code>；<code>Content-Security-Policy "default-src 'self'"</code></td><td class="extra">防点击劫持/嗅探</td></tr>
+      <tr><td class="extra">关闭目录浏览</td><td class="extra">站点配置加 <code>autoindex off;</code></td><td class="extra">防目录遍历</td></tr>
+      <tr><td class="extra">清理暴露文件</td><td class="extra">检查并删除线上 <code>.bak</code>/<code>.zip</code>/<code>.env</code>；注意 <code>public/</code> 下 <code>.bak</code> 勿传上线</td><td class="extra">防源码/配置泄露</td></tr>
+    </tbody>
+  </table>
+
+  <footer>定稿版 · 19 项待处理 + 1 项已解决 · 用户手动逐项执行 · ai-agents-hub 项目文档</footer>
+
+</div>
+</body>
+</html>

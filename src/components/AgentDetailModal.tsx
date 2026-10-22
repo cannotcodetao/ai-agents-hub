@@ -85,7 +85,7 @@ export default function AgentDetailModal({ agent, category, onClose }: AgentDeta
             <div className="flex items-baseline gap-2">
               {agent.fullApp && (
                 <span
-                  className="inline-block h-2 w-2 shrink-0 rounded-full bg-emerald-500"
+                  className="inline-block h-2 w-2 shrink-0 rounded-full bg-sage"
                   title="完整程序·调用API即可"
                 />
               )}
@@ -224,7 +224,7 @@ export default function AgentDetailModal({ agent, category, onClose }: AgentDeta
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-xl border border-line bg-white/50 p-3 transition-colors hover:border-accent/30 hover:bg-white"
                 >
-                  <Zap className="h-5 w-5 text-emerald-500" />
+                  <Zap className="h-5 w-5 text-sage" />
                   <div className="flex-1">
                     <div className="text-sm font-medium text-ink">在线演示 / Demo</div>
                     <div className="text-xs text-ink3">无需安装，直接体验</div>

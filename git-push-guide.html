@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GitHub 仓库创建与代码上传 · 通用 SOP</title>
+<style>
+  /* ============================================================
+     主题变量 — paper / ink / accent
+     ============================================================ */
+  :root {
+    --paper:     #FAFAF7;
+    --ink:       #1A1A1A;
+    --ink2:      #4A4A4A;
+    --ink3:      #8A8A8A;
+    --line:      #E8E6E1;
+    --line2:     #D4D2CC;
+    --accent:    #C8462C;
+    --accentDark:#A53A24;
+    --accentBg:  #FBEDE8;
+    --ok:        #1F7A3F;
+    --warn:      #B45309;
+    --danger:    #991B1B;
+    --code-bg:   #1E1E1E;
+    --code-fg:   #E6E6E6;
+    --code-kw:   #C586C0;
+    --code-str:  #CE9178;
+    --code-cmt:   #6A9955;
+    --code-num:  #B5CEA8;
+    --mono:      ui-monospace, SFMono-Regular, SF Mono, Consolas, Menlo, monospace;
+    --sans:      system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    --serif:     Georgia, "Times New Roman", serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+  ::selection { background: var(--accent); color: #fff; }
+  a { color: var(--accentDark); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ========== 布局 ========== */
+  .layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+  /* ========== 侧边导航 ========== */
+  aside.toc {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--line);
+    padding: 32px 24px;
+    background: var(--paper);
+  }
+  aside.toc h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 20px;
+    margin: 0 0 4px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  aside.toc .sub {
+    font-size: 12px;
+    color: var(--ink3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  aside.toc nav { display: flex; flex-direction: column; gap: 2px; }
+  aside.toc nav a {
+    color: var(--ink2);
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    line-height: 1.4;
+    transition: background .15s, color .15s;
+  }
+  aside.toc nav a:hover {
+    background: var(--accentBg);
+    color: var(--accentDark);
+    text-decoration: none;
+  }
+  aside.toc nav a.l2 { padding-left: 28px; color: var(--ink3); font-size: 13px; }
+  aside.toc .meta {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink3);
+    line-height: 1.9;
+  }
+  aside.toc .meta code {
+    background: #F1EFE9;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  /* ========== 主内容区 ========== */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 56px 120px;
+  }
+  main > header {
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  main > header h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 44px;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  main > header p.lede {
+    color: var(--ink2);
+    font-size: 17px;
+    margin: 0;
+    max-width: 640px;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  section { margin: 56px 0; scroll-margin-top: 32px; }
+  h2.section-title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  h2.section-title .num {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .section-desc {
+    color: var(--ink2);
+    margin: 8px 0 24px;
+    font-size: 15px;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--ink);
+    scroll-margin-top: 24px;
+  }
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 20px 0 8px;
+    color: var(--ink);
+  }
+  p  { color: var(--ink2); margin: 10px 0; }
+  ul, ol { color: var(--ink2); padding-left: 22px; }
+  li { margin: 6px 0; }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ========== 场景卡片 ========== */
+  .scenario-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 26px;
+    background: #fff;
+    margin: 20px 0;
+  }
+  .scenario-card .tag {
+    display: inline-block;
+    background: var(--accentBg);
+    color: var(--accentDark);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .scenario-card h3 { margin-top: 0; }
+
+  /* ========== 步骤 ========== */
+  .step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .step .badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .step h4 { margin: 0 0 6px; }
+  .step p { margin: 0 0 10px; }
+
+  /* ========== 代码块 ========== */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.65;
+    padding: 18px 22px;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin: 12px 0 18px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  }
+  pre code { font-family: inherit; background: none; padding: 0; color: inherit; }
+  /* 简易语法高亮 — 按词着色 */
+  pre .kw  { color: var(--code-kw);  }   /* 关键字/子命令 */
+  pre .str { color: var(--code-str); }   /* 字符串/参数值 */
+  pre .cmt { color: var(--code-cmt); font-style: italic; }   /* 注释 */
+  pre .num { color: var(--code-num); }
+  code.inline {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: #F1EFE9;
+    color: var(--accentDark);
+    padding: 2px 7px;
+    border-radius: 5px;
+    border: 1px solid var(--line);
+  }
+  /* 复制按钮 */
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,.08);
+    color: #bbb;
+    border: 1px solid rgba(255,255,255,.12);
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: var(--sans);
+    opacity: 0;
+    transition: opacity .2s, background .15s;
+  }
+  pre:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: rgba(255,255,255,.16); color: #fff; }
+  .copy-btn.copied { background: var(--ok); color: #fff; border-color: var(--ok); }
+
+  /* ========== 提示条 ========== */
+  .callout {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  .callout .icon { font-size: 18px; line-height: 1.4; }
+  .callout.info    { background: #EEF4FB; border-left: 4px solid #2563EB; color: #1E3A8A; }
+  .callout.ok      { background: #ECF6EF; border-left: 4px solid var(--ok);   color: #14532D; }
+  .callout.warn    { background: #FFF6E9; border-left: 4px solid var(--warn); color: #78350F; }
+  .callout.danger  { background: #FCEFEF; border-left: 4px solid var(--danger);color:#7F1D1D; }
+  .callout strong  { color: inherit; }
+  .callout code.inline {
+    background: rgba(255,255,255,.6);
+    color: inherit;
+    border-color: transparent;
+  }
+
+  /* ========== 表格 ========== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 22px;
+    font-size: 14px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  thead { background: var(--ink); color: #fff; }
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+  td {
+    padding: 11px 16px;
+    border-top: 1px solid var(--line);
+    color: var(--ink2);
+    vertical-align: top;
+  }
+  tr:hover td { background: #FAFAF7; }
+  td code.inline { font-size: 12.5px; }
+  /* 宽表格滚动容器：表格在自身内部横向滚动，避免窄视口下撑破整页 */
+  .table-scroll { overflow-x: auto; margin: 16px 0 22px; }
+  .table-scroll > table { margin: 0; }
+
+  /* ========== 响应式 ========== */
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    aside.toc {
+      position: static;
+      height: auto;
+      max-height: 380px;
+      border-right: none;
+      border-bottom: 1px solid var(--line);
+    }
+    main { padding: 32px 20px 80px; }
+    main > header h1 { font-size: 32px; }
+    h2.section-title { font-size: 22px; }
+  }
+  @media print {
+    aside.toc { display: none; }
+    .layout { display: block; }
+    main { max-width: 100%; padding: 0; }
+    pre { background: #F4F4F0 !important; color: var(--ink) !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- =========================================================
+       侧边导航 TOC
+       ========================================================= -->
+  <aside class="toc">
+    <h1>GitHub SOP</h1>
+    <div class="sub">建仓 · 上传 · 通用版</div>
+
+    <nav>
+      <a href="#s0">▌ 全流程速览</a>
+      <a href="#s1">▌ ① 创建远程仓库</a>
+      <a href="#s2">▌ ② 本地初始化仓库</a>
+      <a href="#s3">▌ ③ 关联远程仓库</a>
+      <a href="#s4">▌ ④ 推送到 GitHub</a>
+      <a href="#s5">▌ 日常更新流程</a>
+      <a href="#s6">▌ 常见问题修复</a>
+      <a href="#s6-1" class="l2">443 连接失败（代理）</a>
+      <a href="#s6-2" class="l2">被拒 fetch first</a>
+      <a href="#s6-3" class="l2">合并冲突</a>
+      <a href="#s6-4" class="l2">认证失败 / Token</a>
+      <a href="#s6-5" class="l2">LF / CRLF 提示</a>
+      <a href="#s7">▌ 附录 A · 配置清单</a>
+      <a href="#s8">▌ 附录 B · 命令速查表</a>
+      <a href="#s9">▌ 附录 C · 推荐工作流</a>
+    </nav>
+
+    <div class="meta">
+      适用环境<br/>
+      <code>Windows · PowerShell / Git Bash</code><br/>
+      传输方式<br/>
+      <code>HTTPS（Token 认证） / SSH</code><br/><br/>
+      适用项目<br/>
+      <code>任意本地项目</code>
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       主内容
+       ========================================================= -->
+  <main>
+    <header>
+      <span class="eyebrow">通用操作手册 · SOP</span>
+      <h1>GitHub 仓库创建与代码上传 SOP</h1>
+      <p class="lede">
+        四阶段标准流程：创建远程仓库 → 本地初始化 → 关联远程 → 推送上传。
+        附带日常更新流程、5 类常见报错的标准化修复、配置清单与命令速查表。
+      </p>
+    </header>
+
+    <!-- ==================== S0：全流程速览 ==================== -->
+    <section id="s0">
+      <h2 class="section-title"><span class="num">§0</span> 全流程速览</h2>
+      <p class="section-desc">从零到代码出现在 GitHub 上，一共 4 个阶段。照着做一遍即可，全程约 5 分钟。</p>
+
+      <div class="scenario-card">
+        <span class="tag">阶段一 · 线上操作</span>
+        <h3>① 创建 GitHub 远程仓库</h3>
+        <p>在 GitHub 网页建一个<strong>空</strong>仓库，拿到它的 HTTPS 地址。</p>
+        <p><strong>→ <a href="#s1">§1 创建 GitHub 远程仓库</a></strong></p>
+      </div>
+
+      <div class="scenario-card">
+        <span class="tag">阶段二 · 本地操作</span>
+        <h3>② 本地初始化仓库</h3>
+        <p>在项目根目录执行 <code class="inline">git init</code>，先写好 <code class="inline">.gitignore</code>，产生第一个提交。</p>
+        <p><strong>→ <a href="#s2">§2 本地初始化仓库</a></strong></p>
+      </div>
+
+      <div class="scenario-card">
+        <span class="tag">阶段三 · 连线</span>
+        <h3>③ 关联远程仓库</h3>
+        <p>用 <code class="inline">git remote add</code> 把本地仓库和刚建的 GitHub 仓库连起来。</p>
+        <p><strong>→ <a href="#s3">§3 关联远程仓库</a></strong></p>
+      </div>
+
+      <div class="scenario-card">
+        <span class="tag">阶段四 · 上传</span>
+        <h3>④ 推送到 GitHub</h3>
+        <p><code class="inline">git push -u origin main</code>，刷新网页即可看到代码。</p>
+        <p><strong>→ <a href="#s4">§4 推送到 GitHub</a></strong></p>
+      </div>
+
+      <div class="callout info">
+        <span class="icon">ⓘ</span>
+        <div><strong>仓库已经建好了、只是想同步新改动？</strong>
+          直接看 <a href="#s5">§5 日常更新流程</a> —— 4 条命令搞定，不必重走上面四个阶段。</div>
+      </div>
+
+      <div class="callout danger">
+        <span class="icon">⚠</span>
+        <div><strong>动手前先确认两件事：</strong>
+          <ol>
+            <li>网络能连上 GitHub（内地需要代理，配置见 <a href="#s6-1">§6-1</a>）</li>
+            <li><code class="inline">.gitignore</code> 已写好 —— 别把依赖目录、构建产物、密钥文件、个人隐私材料传上去（见 <a href="#s2">§2</a> 步骤 2）</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== S1：创建远程仓库 ==================== -->
+    <section id="s1">
+      <h2 class="section-title"><span class="num">§1</span> 阶段一 · 创建 GitHub 远程仓库</h2>
+      <p class="section-desc">全程在浏览器完成，不需要命令行。前提：已注册并登录 GitHub 账号。</p>
+
+      <div class="step">
+        <div class="badge">1</div>
+        <div>
+          <h4>打开新建仓库页面</h4>
+          <p>访问 <a href="https://github.com/new" target="_blank" rel="noopener">https://github.com/new</a>。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">2</div>
+        <div>
+          <h4>填写仓库名与可见性</h4>
+          <ul>
+            <li><strong>Repository name</strong>：用英文/数字/短横线，建议与本地项目文件夹同名（如 <code class="inline">my-project</code>）。</li>
+            <li><strong>Description</strong>：可选，一句话说明用途。</li>
+            <li><strong>Visibility</strong>：<code class="inline">Public</code> 公开 / <code class="inline">Private</code> 私有。
+              <strong>含隐私材料（简历、客户数据、内部资料、密钥）一律选 Private。</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">3</div>
+        <div>
+          <h4>不要勾选任何「初始化」选项（关键）</h4>
+          <p><strong style="color:var(--danger);">下面三项全部留空：</strong></p>
+          <ul>
+            <li><code class="inline">☐ Add a README file</code></li>
+            <li><code class="inline">☐ Add .gitignore</code></li>
+            <li><code class="inline">☐ Choose a license</code></li>
+          </ul>
+          <p><strong>原因：</strong>勾选后远程仓库会自带一个提交，与本地历史无共同祖先。首次 push 会被拒绝，需要多做一步处理（见 <a href="#s6-2">§6-2</a>）。建一个纯空仓库可以让上传一次通过。</p>
+          <div class="callout warn">
+            <span class="icon">!</span>
+            <div>已经勾选了、或仓库是别人/自动生成的，<strong>不用删仓库重建</strong> —— 直接按 <a href="#s6-2">§6-2</a> 的两种策略之一处理即可。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">4</div>
+        <div>
+          <h4>创建并复制仓库地址</h4>
+          <p>点 <strong>Create repository</strong>，然后在仓库首页点绿色 <strong>Code</strong> 按钮，切到 <strong>HTTPS</strong> 标签，复制形如下面的地址（下一步要用）：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code>https://github.com/<span class="str">&lt;你的用户名&gt;</span>/<span class="str">&lt;仓库名&gt;</span>.git</code></pre>
+          <p>想用 SSH 免密方式，同位置切到 <strong>SSH</strong> 标签，复制 <code class="inline">git@github.com:&lt;用户名&gt;/&lt;仓库名&gt;.git</code>，配置见 <a href="#s6-4">§6-4</a>。</p>
+        </div>
+      </div>
+
+      <div class="callout ok">
+        <span class="icon">✓</span>
+        <div>阶段一完成标志：GitHub 上能看到这个<strong>空</strong>仓库页面，并已复制好仓库地址。</div>
+      </div>
+    </section>
+
+    <!-- ==================== S2：本地初始化仓库 ==================== -->
+    <section id="s2">
+      <h2 class="section-title"><span class="num">§2</span> 阶段二 · 本地初始化仓库</h2>
+      <p class="section-desc">
+        在<strong>项目根目录</strong>打开 PowerShell 或 Git Bash（Windows 下先进入项目文件夹，可在文件夹里右键「在终端中打开」）。
+        路径示例：<code class="inline">D:\path\to\your-project</code>
+      </p>
+
+      <h3>前置 · 一次性全局配置（新环境才需要，已配过可跳过）</h3>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 1. 身份信息（GitHub 依据邮箱把你的提交关联到账号）</span>
+<span class="kw">git</span> config <span class="str">--global</span> user.name  <span class="str">"你的GitHub用户名"</span>
+<span class="kw">git</span> config <span class="str">--global</span> user.email <span class="str">"你注册GitHub的邮箱"</span>
+
+<span class="cmt"># 2. 换行符（Windows 推荐）</span>
+<span class="kw">git</span> config <span class="str">--global</span> core.autocrlf <span class="kw">true</span>
+
+<span class="cmt"># 3. 默认分支名 main</span>
+<span class="kw">git</span> config <span class="str">--global</span> init.defaultBranch main
+
+<span class="cmt"># 4. 凭据管理器（记住 GitHub Token，避免重复输入）</span>
+<span class="kw">git</span> config <span class="str">--global</span> credential.helper manager
+
+<span class="cmt"># 5. 代理（内地网络需要，端口按你实际代理软件填）</span>
+<span class="kw">git</span> config <span class="str">--global</span> http.proxy  http://127.0.0.1:<span class="num">7890</span>
+<span class="kw">git</span> config <span class="str">--global</span> https.proxy http://127.0.0.1:<span class="num">7890</span>
+
+<span class="cmt"># 6. HTTP 缓冲（可选，防大仓库推送中途断开）</span>
+<span class="kw">git</span> config <span class="str">--global</span> http.postBuffer <span class="num">524288000</span></code></pre>
+      <p>检查当前全局配置是否已生效：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> config <span class="str">--global</span> <span class="str">--list</span></code></pre>
+
+      <h3>步骤 1 · 初始化本地仓库</h3>
+      <div class="step">
+        <div class="badge">1</div>
+        <div>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> init <span class="str">-b</span> main</code></pre>
+          <p>成功提示：<code class="inline">Initialized empty Git repository in .../.git/</code>；
+            <code class="inline">-b main</code> 表示把默认主分支命名为 <code class="inline">main</code>（与 GitHub 默认一致）。</p>
+          <div class="callout info">
+            <span class="icon">ⓘ</span>
+            <div>如果目录里已经存在 <code class="inline">.git</code> 文件夹，说明已经是仓库了，<strong>跳过本步</strong>，直接从步骤 2 开始。</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>步骤 2 · 先写 .gitignore（务必在 add 之前）</h3>
+      <div class="step">
+        <div class="badge">2</div>
+        <div>
+          <p>在项目根目录新建名为 <code class="inline">.gitignore</code> 的文件，列出「永不入库」的内容。</p>
+          <div class="callout danger">
+            <span class="icon">⚠</span>
+            <div><strong>顺序很重要：</strong>必须先写好 .gitignore 再执行 <code class="inline">git add</code>。
+              文件一旦被提交，即使之后补进 .gitignore，它仍然留在历史记录里，需要额外操作才能清除。</div>
+          </div>
+          <p>下面是一份可直接使用的通用模板（按需增删）：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># ---- 依赖目录 ----</span>
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+<span class="cmt"># ---- 构建产物 ----</span>
+dist/
+build/
+out/
+target/
+*.egg-info/
+
+<span class="cmt"># ---- 密钥与环境变量（务必忽略）----</span>
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.authcode
+config.local.json
+
+<span class="cmt"># ---- 个人隐私材料（按需保留）----</span>
+resume/
+简历/
+attachments/*
+!attachments/.gitkeep
+
+<span class="cmt"># ---- 编辑器与系统 ----</span>
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+<span class="cmt"># ---- 临时文件 ----</span>
+*.tmp
+*.bak
+*.log</code></pre>
+          <div class="callout danger">
+            <span class="icon">✕</span>
+            <div><strong>绝不入库的清单：</strong>
+              API Key / Token / 密码、<code class="inline">.env</code>、私钥文件、
+              真实个人隐私材料（简历、证件、客户名单）、大体积二进制与数据集。</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>步骤 3 · 暂存文件</h3>
+      <div class="step">
+        <div class="badge">3</div>
+        <div>
+          <p>三种方式按颗粒度需求任选：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 方法 A（常用）：暂存所有改动 + 新增文件（自动遵守 .gitignore）</span>
+<span class="kw">git</span> add .
+
+<span class="cmt"># 方法 B（精细）：只暂存指定文件或目录</span>
+<span class="kw">git</span> add src/main.js
+<span class="kw">git</span> add docs/
+
+<span class="cmt"># 方法 C（逐段确认，变更较杂时用）</span>
+<span class="kw">git</span> add <span class="str">-p</span></code></pre>
+          <p><strong>验证暂存结果：</strong></p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> status <span class="str">--short</span></code></pre>
+          <p>字母含义：<code class="inline">A</code> 新增 · <code class="inline">M</code> 修改 · <code class="inline">D</code> 删除 ·
+            <code class="inline">??</code> 未追踪（尚未 add）。</p>
+        </div>
+      </div>
+
+      <h3>步骤 4 · 产生第一个提交</h3>
+      <div class="step">
+        <div class="badge">4</div>
+        <div>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> commit <span class="str">-m</span> <span class="str">"Initial commit"</span></code></pre>
+          <p><strong>预期输出：</strong><code class="inline">[main (root-commit) abc1234] Initial commit</code>，后跟变更文件统计。</p>
+          <div class="callout info">
+            <span class="icon">ⓘ</span>
+            <div>如果忘记加 <code class="inline">-m</code> 而跳进 vim 编辑器：按 <code class="inline">Esc</code> → 输入
+              <code class="inline">:q!</code> 回车退出（不保存）。正常写信息：按 <code class="inline">i</code> 进入插入模式，
+              写完按 <code class="inline">Esc</code> → <code class="inline">:wq</code> 回车保存退出。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout ok">
+        <span class="icon">✓</span>
+        <div>阶段二完成标志：<code class="inline">git log --oneline</code> 能看到至少一条提交，<code class="inline">git status</code> 显示工作区干净。</div>
+      </div>
+    </section>
+
+    <!-- ==================== S3：关联远程仓库 ==================== -->
+    <section id="s3">
+      <h2 class="section-title"><span class="num">§3</span> 阶段三 · 关联远程仓库</h2>
+      <p class="section-desc">把本地仓库指向 §1 创建好的 GitHub 仓库。这一步只需做一次。</p>
+
+      <div class="step">
+        <div class="badge">1</div>
+        <div>
+          <h4>添加远程仓库，命名为 origin</h4>
+          <p>把地址替换成 <a href="#s1">§1</a> 复制到的那一个：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> remote add origin https://github.com/<span class="str">&lt;你的用户名&gt;</span>/<span class="str">&lt;仓库名&gt;</span>.git</code></pre>
+          <p><code class="inline">origin</code> 是远程仓库的默认别名，约定俗成用这个名字即可。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">2</div>
+        <div>
+          <h4>验证关联是否成功</h4>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> remote <span class="str">-v</span></code></pre>
+          <p><strong>预期输出（两行，URL 应完全相同）：</strong></p>
+<pre><code>origin  https://github.com/<span class="str">&lt;你的用户名&gt;</span>/<span class="str">&lt;仓库名&gt;</span>.git (fetch)
+origin  https://github.com/<span class="str">&lt;你的用户名&gt;</span>/<span class="str">&lt;仓库名&gt;</span>.git (push)</code></pre>
+          <p>若只有一行或缺 <code class="inline">(push)</code>，说明配置有误，用 <code class="inline">git remote remove origin</code> 删掉后重做第 1 步。</p>
+        </div>
+      </div>
+
+      <h3>常见调整</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>需求</th><th>命令</th></tr></thead>
+        <tbody>
+          <tr><td>改成 SSH 地址</td><td><code class="inline">git remote set-url origin git@github.com:&lt;用户名&gt;/&lt;仓库名&gt;.git</code></td></tr>
+          <tr><td>换成另一个远程仓库</td><td><code class="inline">git remote set-url origin &lt;新URL&gt;</code></td></tr>
+          <tr><td>解绑远程</td><td><code class="inline">git remote remove origin</code></td></tr>
+          <tr><td>同一个本地仓库挂多个远程</td><td><code class="inline">git remote add backup &lt;另一个URL&gt;</code>，推送时写 <code class="inline">git push backup main</code></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout ok">
+        <span class="icon">✓</span>
+        <div>阶段三完成标志：<code class="inline">git remote -v</code> 输出两行且地址正确。</div>
+      </div>
+    </section>
+
+    <!-- ==================== S4：推送到 GitHub ==================== -->
+    <section id="s4">
+      <h2 class="section-title"><span class="num">§4</span> 阶段四 · 推送到 GitHub</h2>
+      <p class="section-desc">把本地提交上传到远程。首次推送用 <code class="inline">-u</code> 绑定追踪关系，之后日常推送只需 <code class="inline">git push</code>。</p>
+
+      <div class="step">
+        <div class="badge">1</div>
+        <div>
+          <h4>执行首次推送</h4>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> push <span class="str">-u</span> origin main</code></pre>
+          <p><code class="inline">-u</code> 即 <code class="inline">--set-upstream</code>：把本地 <code class="inline">main</code> 与远程
+            <code class="inline">origin/main</code> 绑定。绑定后，以后在该分支直接 <code class="inline">git push</code> 即可，无需再写参数。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">2</div>
+        <div>
+          <h4>首次推送需要身份验证</h4>
+          <p>GitHub 早已<strong>不支持账号密码</strong>，必须用 Personal Access Token（或改用 SSH）。弹窗时：</p>
+          <ul>
+            <li>用户名：你的 GitHub 用户名</li>
+            <li>密码：<strong>粘贴 Token</strong>（以 <code class="inline">ghp_</code> 开头），<strong>不是</strong> GitHub 登录密码</li>
+          </ul>
+          <p>Token 的创建步骤与免密方案见 <a href="#s6-4">§6-4</a>。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">3</div>
+        <div>
+          <h4>确认推送成功</h4>
+          <p><strong>预期输出：</strong></p>
+<pre><code>To https://github.com/<span class="str">&lt;你的用户名&gt;</span>/<span class="str">&lt;仓库名&gt;</span>.git
+ * [new branch]      main -&gt; main
+branch 'main' set up to track 'origin/main'.</code></pre>
+          <p>然后刷新 GitHub 仓库页面，应该能看到全部文件。</p>
+          <p>本地再次核对：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 本地 HEAD 与远程 main 的哈希应完全一致</span>
+<span class="kw">git</span> rev-parse main
+<span class="kw">git</span> ls-remote origin main</code></pre>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="icon">!</span>
+        <div><strong>push 被拒（fetch first / non-fast-forward）？</strong>
+          说明远程已有本地没有的提交。按 <a href="#s6-2">§6-2</a> 选择处理策略。</div>
+      </div>
+    </section>
+
+    <!-- ==================== S5：日常更新流程 ==================== -->
+    <section id="s5">
+      <h2 class="section-title"><span class="num">§5</span> 日常更新流程（仓库已存在）</h2>
+      <p class="section-desc">仓库已经建好、也绑定过远程，之后只是改了东西要同步 —— 4 步完成。</p>
+
+      <div class="step">
+        <div class="badge">1</div>
+        <div>
+          <h4>查看当前状态</h4>
+          <p>先看一眼改了什么，避免误提交临时文件或密钥。</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> status
+<span class="kw">git</span> diff</code></pre>
+          <p><code class="inline">status</code> 看文件清单，<code class="inline">diff</code> 看逐行改动。若显示
+            <code class="inline">nothing to commit, working tree clean</code>，说明没有改动，无需继续。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">2</div>
+        <div>
+          <h4>暂存改动</h4>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> add .
+<span class="kw">git</span> status <span class="str">--short</span></code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">3</div>
+        <div>
+          <h4>创建提交</h4>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> commit <span class="str">-m</span> <span class="str">"类型: 简洁说明（动词开头）"</span></code></pre>
+          <p><strong>推荐的提交信息前缀（便于回溯定位）：</strong></p>
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>前缀</th><th>含义</th><th>示例</th></tr></thead>
+            <tbody>
+              <tr><td><code class="inline">feat</code></td><td>新功能</td><td><code class="inline">feat: add export to CSV</code></td></tr>
+              <tr><td><code class="inline">fix</code></td><td>修复缺陷</td><td><code class="inline">fix: handle empty input</code></td></tr>
+              <tr><td><code class="inline">docs</code></td><td>文档</td><td><code class="inline">docs: update setup steps</code></td></tr>
+              <tr><td><code class="inline">refactor</code></td><td>重构（不改行为）</td><td><code class="inline">refactor: extract parse util</code></td></tr>
+              <tr><td><code class="inline">perf</code></td><td>性能优化</td><td><code class="inline">perf: lazy-load list data</code></td></tr>
+              <tr><td><code class="inline">test</code></td><td>测试</td><td><code class="inline">test: add unit tests for utils</code></td></tr>
+              <tr><td><code class="inline">chore</code></td><td>构建/依赖/工具</td><td><code class="inline">chore: bump dependency versions</code></td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="badge">4</div>
+        <div>
+          <h4>先拉后推，然后推送</h4>
+          <p>推送前先拉一次远程，避免与别人的提交冲突：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 拉取远程最新（有冲突在本地解决，见 §6-3）</span>
+<span class="kw">git</span> pull <span class="str">--rebase</span>
+
+<span class="cmt"># 推送</span>
+<span class="kw">git</span> push</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== S6：常见问题修复 ==================== -->
+    <section id="s6">
+      <h2 class="section-title"><span class="num">§6</span> 常见问题与标准化修复</h2>
+      <p class="section-desc">按报错信息找到对应编号，直接复制修复命令。</p>
+
+      <!-- 6-1 443 代理 -->
+      <h3 id="s6-1">问题 1 · 443 连接失败 / 超时</h3>
+      <p><strong>报错信息：</strong></p>
+<pre><code><span class="cmt"># 典型报错 1：完全连不上</span>
+Failed to connect to github.com port <span class="num">443</span> after <span class="num">21000</span> ms: Could not connect to server
+
+<span class="cmt"># 典型报错 2：连上但传输中断</span>
+RPC failed; curl <span class="num">55</span> Send failure: Connection was reset
+send-pack: unexpected disconnect while reading sideband packet</code></pre>
+
+      <p><strong>原因：</strong>内地网络无法直连 GitHub，且 git 不会自动使用浏览器的代理通道，必须单独为 git 配置代理。</p>
+
+      <h4>修复：给 git 单独配置代理</h4>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># ① 配置 git 全局代理（端口填你实际代理软件的值）</span>
+<span class="cmt"># Clash / V2Ray 默认 7890 · Shadowsocks 默认 1080</span>
+<span class="kw">git</span> config <span class="str">--global</span> http.proxy  http://127.0.0.1:<span class="num">7890</span>
+<span class="kw">git</span> config <span class="str">--global</span> https.proxy http://127.0.0.1:<span class="num">7890</span>
+
+<span class="cmt"># ② 加大 HTTP 缓冲（大仓库推送防中途断开）</span>
+<span class="kw">git</span> config <span class="str">--global</span> http.postBuffer <span class="num">524288000</span>
+
+<span class="cmt"># ③ 验证是否生效</span>
+<span class="kw">git</span> config <span class="str">--global</span> <span class="str">--get</span> https.proxy
+<span class="cmt"># 预期输出: http://127.0.0.1:7890</span></code></pre>
+
+      <h4>取消代理（不用代理 / 已回国时）</h4>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> config <span class="str">--global</span> <span class="str">--unset</span> http.proxy
+<span class="kw">git</span> config <span class="str">--global</span> <span class="str">--unset</span> https.proxy</code></pre>
+
+      <div class="callout info">
+        <span class="icon">ⓘ</span>
+        <div>诊断技巧：<code class="inline">git ls-remote &lt;仓库URL&gt;</code> 能列出远程分支哈希，说明网络与认证都正常；若卡住或报 443，就是代理问题。</div>
+      </div>
+
+      <!-- 6-2 非快进 -->
+      <h3 id="s6-2">问题 2 · push 被拒：fetch first / non-fast-forward</h3>
+      <p><strong>报错信息：</strong></p>
+<pre><code>! [rejected]        main -&gt; main (fetch first)
+error: failed to push some refs to <span class="str">'https://github.com/xxx/xxx.git'</span>
+hint: Updates were rejected because the remote contains work that you
+hint: do not have locally.</code></pre>
+
+      <p><strong>原因：</strong>远程存在本地没有的提交 —— 常见于建仓时勾选了 README/.gitignore，或远程被其他人/平台初始化过。
+先确认双方关系：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 拉取远程引用但不合并，先看清楚</span>
+<span class="kw">git</span> fetch origin
+<span class="kw">git</span> log origin/main <span class="str">--oneline</span> <span class="str">-10</span>
+
+<span class="cmt"># 检查是否存在共同祖先（无输出 = 两条历史完全无关）</span>
+<span class="kw">git</span> merge-base main origin/main</code></pre>
+
+      <p><strong>两种处理策略：</strong></p>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>策略</th><th>命令</th><th>适用场景</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>A. 合并（安全）</strong></td>
+            <td><code class="inline">git pull origin main --rebase</code><br/>若提示 unrelated histories：<br/><code class="inline">git pull origin main --rebase --allow-unrelated-histories</code></td>
+            <td>远程有有价值的文件（README / LICENSE / CI 配置），想保留双方内容。可能需要解冲突，见 <a href="#s6-3">§6-3</a></td>
+          </tr>
+          <tr>
+            <td><strong>B. 本地覆盖远程</strong></td>
+            <td><code class="inline">git push --force-with-lease origin main</code></td>
+            <td>远程只是占位/废弃内容，<strong>本地才是完整权威版本</strong>。远程原有文件会被替换</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout danger">
+        <span class="icon">✕</span>
+        <div><strong>永远不要用裸 <code class="inline">git push --force</code>。</strong>
+          它会无差别覆盖远程，可能抹掉别人的提交。
+          <code class="inline">--force-with-lease</code> 会在推送前检查远程分支是否被改动过，一旦别人有新提交就会拒绝，安全得多。</div>
+      </div>
+
+      <!-- 6-3 冲突 -->
+      <h3 id="s6-3">问题 3 · 合并冲突 Merge conflict</h3>
+      <p><strong>报错信息：</strong></p>
+<pre><code>CONFLICT (content): Merge conflict in src/main.js
+error: could not apply abc1234... 你的提交说明
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm &lt;conflicted_files&gt;", then run "git rebase --continue".</code></pre>
+
+      <h4>手动修复步骤</h4>
+      <ol>
+        <li>打开冲突文件，找到三行标记：
+<pre style="background:#2B2B2B;border-radius:6px;padding:12px;font-size:12.5px;"><code><span style="color:#C586C0">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+本地当前分支的内容
+<span style="color:#CE9178">=======</span>
+拉取下来的远程内容
+<span style="color:#C586C0">&gt;&gt;&gt;&gt;&gt;&gt;&gt; abc1234... 提交说明</code></pre>
+        </li>
+        <li>把文件改成<strong>最终想要的版本</strong>，并<strong>删掉这三行标记</strong>。</li>
+        <li>保存后执行：
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 标记该文件冲突已解决</span>
+<span class="kw">git</span> add src/main.js
+
+<span class="cmt"># 继续 rebase 流程（若是 merge 流程则用 git commit）</span>
+<span class="kw">git</span> rebase <span class="str">--continue</span>
+
+<span class="cmt"># 完成后推送</span>
+<span class="kw">git</span> push</code></pre>
+        </li>
+      </ol>
+
+      <p><strong>批量冲突解决技巧（明确知道保留哪边时）：</strong></p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 以本地版本为准（保留我方）</span>
+<span class="kw">git</span> checkout <span class="str">--ours</span> src/main.js
+
+<span class="cmt"># 以远程版本为准（保留对方）</span>
+<span class="kw">git</span> checkout <span class="str">--theirs</span> src/main.js
+
+<span class="cmt"># 然后 git add + git rebase --continue</span></code></pre>
+
+      <div class="callout info">
+        <span class="icon">ⓘ</span>
+        <div>想放弃这次合并、回到操作前：<code class="inline">git rebase --abort</code>（rebase 流程）或
+          <code class="inline">git merge --abort</code>（merge 流程）。</div>
+      </div>
+
+      <!-- 6-4 认证 -->
+      <h3 id="s6-4">问题 4 · 认证失败 Authentication failed</h3>
+      <p><strong>报错信息：</strong></p>
+<pre><code>remote: Support for password authentication was removed on August 13, 2021.
+fatal: Authentication failed for <span class="str">'https://github.com/xxx/xxx.git/'</span></code></pre>
+      <p><strong>原因：</strong>GitHub 自 2021 年起<strong>不再接受账号密码</strong>，必须使用 Personal Access Token 或 SSH 密钥。</p>
+
+      <h4>方案 A · 使用 Personal Access Token（HTTPS 方式）</h4>
+      <ol>
+        <li>打开 <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a></li>
+        <li>点 <strong>Generate new token</strong> → 选 <strong>Tokens (classic)</strong></li>
+        <li>Note 填用途描述；过期时间按需；勾选 <code class="inline">repo</code> 权限（整组）</li>
+        <li>生成后<strong>立即复制</strong>（以 <code class="inline">ghp_</code> 开头，只显示这一次）</li>
+        <li>下次 <code class="inline">git push</code> 提示输入时：
+          <ul>
+            <li>Username：你的 GitHub 用户名</li>
+            <li>Password：<strong>粘贴 Token</strong>（不是登录密码）</li>
+          </ul>
+        </li>
+      </ol>
+      <p>让 Windows 凭据管理器记住它，避免反复输入：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> config <span class="str">--global</span> credential.helper manager</code></pre>
+      <div class="callout warn">
+        <span class="icon">!</span>
+        <div>Token 等同于密码：<strong>不要写进代码、不要提交进仓库</strong>。泄露了立即到上面的页面 Revoke 撤销。</div>
+      </div>
+
+      <h4>方案 B · 改用 SSH（一次配置，长期免密）</h4>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 1. 生成 SSH 密钥（-C 填你的 GitHub 注册邮箱）</span>
+ssh-keygen <span class="str">-t</span> ed25519 <span class="str">-C</span> <span class="str">"you@example.com"</span>
+<span class="cmt">#    连续回车使用默认路径与空密码</span>
+
+<span class="cmt"># 2. 查看公钥全文并复制（Windows 路径）</span>
+<span class="kw">type</span> %USERPROFILE%\.ssh\id_ed25519.pub
+
+<span class="cmt"># 3. 粘贴到 github.com/settings/keys → New SSH key</span>
+
+<span class="cmt"># 4. 把当前仓库的远程地址改成 SSH 形式</span>
+<span class="kw">git</span> remote set-url origin git@github.com:<span class="str">&lt;你的用户名&gt;</span>/<span class="str">&lt;仓库名&gt;</span>.git
+
+<span class="cmt"># 5. 测试连通（首次询问 yes/no，输入 yes）</span>
+ssh <span class="str">-T</span> git@github.com
+<span class="cmt"># 成功提示: Hi &lt;用户名&gt;! You've successfully authenticated...</span></code></pre>
+
+      <!-- 6-5 CRLF -->
+      <h3 id="s6-5">问题 5 · LF / CRLF 换行符提示</h3>
+      <p><strong>提示信息：</strong></p>
+<pre><code>warning: LF will be replaced by CRLF the next time Git touches it</code></pre>
+      <p><strong>这不是错误</strong>，只是信息提示。原因：Windows 默认 CRLF，Linux / GitHub 默认 LF，git 自动转换。</p>
+      <p>想消除提示（推荐设置）：</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="kw">git</span> config <span class="str">--global</span> core.autocrlf <span class="kw">true</span></code></pre>
+      <p>含义：检出时 LF → CRLF（适配 Windows 编辑器），提交时 CRLF → LF（保持仓库内统一为 LF）。</p>
+    </section>
+
+    <!-- ==================== S7：附录 A 配置清单 ==================== -->
+    <section id="s7">
+      <h2 class="section-title"><span class="num">§7</span> 附录 A · 一次性配置清单</h2>
+      <p class="section-desc">换新电脑 / 新环境时跑一遍即可，之后不必重复。</p>
+
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># ▸ 身份（GitHub 据此把提交关联到你的账号）</span>
+<span class="kw">git</span> config <span class="str">--global</span> user.name  <span class="str">"你的GitHub用户名"</span>
+<span class="kw">git</span> config <span class="str">--global</span> user.email <span class="str">"你注册GitHub的邮箱"</span>
+
+<span class="cmt"># ▸ 换行符（Windows）</span>
+<span class="kw">git</span> config <span class="str">--global</span> core.autocrlf <span class="kw">true</span>
+
+<span class="cmt"># ▸ 默认主分支名</span>
+<span class="kw">git</span> config <span class="str">--global</span> init.defaultBranch main
+
+<span class="cmt"># ▸ 记住凭据（Token / 密码）</span>
+<span class="kw">git</span> config <span class="str">--global</span> credential.helper manager
+
+<span class="cmt"># ▸ 代理（内地网络需要）</span>
+<span class="kw">git</span> config <span class="str">--global</span> http.proxy  http://127.0.0.1:<span class="num">7890</span>
+<span class="kw">git</span> config <span class="str">--global</span> https.proxy http://127.0.0.1:<span class="num">7890</span>
+
+<span class="cmt"># ▸ HTTP 缓冲（大仓库可选）</span>
+<span class="kw">git</span> config <span class="str">--global</span> http.postBuffer <span class="num">524288000</span></code></pre>
+
+      <h3>验证配置</h3>
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># 全局配置</span>
+<span class="kw">git</span> config <span class="str">--global</span> <span class="str">--list</span>
+
+<span class="cmt"># 当前仓库级配置（确认 origin 地址是否正确）</span>
+<span class="kw">git</span> config <span class="str">--local</span> <span class="str">--list</span></code></pre>
+    </section>
+
+    <!-- ==================== S8：附录 B 速查表 ==================== -->
+    <section id="s8">
+      <h2 class="section-title"><span class="num">§8</span> 附录 B · 命令速查表</h2>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>想做的事</th><th>命令</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td>初始化本地仓库</td><td><code class="inline">git init -b main</code></td><td>主分支命名 main</td></tr>
+          <tr><td>关联远程仓库</td><td><code class="inline">git remote add origin &lt;URL&gt;</code></td><td>只需一次</td></tr>
+          <tr><td>查看远程地址</td><td><code class="inline">git remote -v</code></td><td>应显示 fetch + push 两行</td></tr>
+          <tr><td>改远程地址</td><td><code class="inline">git remote set-url origin &lt;新URL&gt;</code></td><td>换仓库 / 换协议用</td></tr>
+          <tr><td>首次推送并绑定追踪</td><td><code class="inline">git push -u origin main</code></td><td>之后可只用 <code class="inline">git push</code></td></tr>
+          <tr><td>查看改动</td><td><code class="inline">git status</code> / <code class="inline">git diff</code></td><td>diff 看逐行内容</td></tr>
+          <tr><td>查看提交历史</td><td><code class="inline">git log --oneline -10</code></td><td>紧凑显示最近 10 条</td></tr>
+          <tr><td>撤销工作区改动（未 add）</td><td><code class="inline">git restore 文件名</code></td><td>旧写法：<code class="inline">git checkout -- 文件名</code></td></tr>
+          <tr><td>撤销 add（未 commit）</td><td><code class="inline">git reset HEAD 文件名</code></td><td>退回工作区</td></tr>
+          <tr><td>撤销上一次提交（未 push，保留改动）</td><td><code class="inline">git reset --soft HEAD~1</code></td><td>安全，改动留在暂存区</td></tr>
+          <tr><td>撤销上一次提交（未 push，<strong>丢弃改动</strong>）</td><td><code class="inline">git reset --hard HEAD~1</code></td><td style="color:var(--danger);">⚠ 不可逆，慎用</td></tr>
+          <tr><td>拉取远程最新</td><td><code class="inline">git pull --rebase</code></td><td>历史比默认 merge 更干净</td></tr>
+          <tr><td>查看所有分支</td><td><code class="inline">git branch -a</code></td><td>本地 + 远程</td></tr>
+          <tr><td>新建分支并切换</td><td><code class="inline">git switch -c feature-x</code></td><td>旧写法：<code class="inline">git checkout -b ...</code></td></tr>
+          <tr><td>切回主分支</td><td><code class="inline">git switch main</code></td><td>旧写法：<code class="inline">git checkout main</code></td></tr>
+          <tr><td>把分支合入 main</td><td><code class="inline">git switch main &amp;&amp; git merge feature-x</code></td><td>先切回 main 再合并</td></tr>
+          <tr><td>删除本地分支</td><td><code class="inline">git branch -d feature-x</code></td><td><code class="inline">-D</code> 强制删未合并分支</td></tr>
+          <tr><td>临时存放未完成改动</td><td><code class="inline">git stash push -m "描述"</code></td><td>取回：<code class="inline">git stash pop</code></td></tr>
+          <tr><td>安全强制推送</td><td><code class="inline">git push --force-with-lease</code></td><td>不要用裸 <code class="inline">--force</code></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <!-- ==================== S9：附录 C 推荐工作流 ==================== -->
+    <section id="s9">
+      <h2 class="section-title"><span class="num">§9</span> 附录 C · 推荐工作流</h2>
+      <p class="section-desc">养成这套习惯，可以避免绝大多数冲突与误提交。</p>
+
+<pre><button class="copy-btn" onclick="copyPre(this)">复制</button><code><span class="cmt"># ━━━ 动手写之前 ━━━</span>
+<span class="cmt"># 1. 先拉远程最新，保证起点是最新的</span>
+<span class="kw">git</span> pull <span class="str">--rebase</span>
+
+<span class="cmt"># ━━━ 写代码 …… ━━━</span>
+
+<span class="cmt"># ━━━ 准备提交 ━━━</span>
+<span class="cmt"># 2. 检查改动，防止误提交临时文件 / 密钥 / 日志</span>
+<span class="kw">git</span> status
+<span class="kw">git</span> diff
+
+<span class="cmt"># 3. 暂存 + 提交</span>
+<span class="kw">git</span> add .
+<span class="kw">git</span> commit <span class="str">-m</span> <span class="str">"feat: 明确的、动词开头的说明"</span>
+
+<span class="cmt"># ━━━ 推送前再拉一次，防止他人已推送 ━━━</span>
+<span class="cmt"># 4. 拉最新，若有冲突在本地解决（见 §6-3）</span>
+<span class="kw">git</span> pull <span class="str">--rebase</span>
+
+<span class="cmt"># 5. 推送</span>
+<span class="kw">git</span> push</code></pre>
+
+      <div class="callout ok">
+        <span class="icon">★</span>
+        <div>
+          <strong>核心原则 3 条：</strong>
+          <ol style="margin:6px 0 0 18px;">
+            <li><strong>先拉再写，再拉再推</strong> —— 冲突永远在本地解决，不要带到线上。</li>
+            <li><strong>小步提交，信息清晰</strong> —— 半天几百行改动堆在一个 commit 里，之后无法定位问题。</li>
+            <li><strong>push 前看一眼 diff</strong> —— 能挡住绝大多数误提交（临时调试代码、密钥、日志文件）。</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <hr style="margin-top:80px;border:none;border-top:1px solid var(--line);"/>
+    <p style="text-align:center;color:var(--ink3);font-size:13px;margin-top:24px;">
+      通用 SOP · 适用任意本地项目 · 命令基于 Git 官方 CLI（Windows 环境）<br/>
+      遇到报错按 §6 编号定位；尚未覆盖的场景请查阅
+      <a href="https://git-scm.com/docs" target="_blank" rel="noopener">Git 官方文档</a>
+      与
+      <a href="https://docs.github.com/" target="_blank" rel="noopener">GitHub 官方文档</a>
+    </p>
+
+  </main>
+</div>
+
+<script>
+  /* 复制按钮逻辑 */
+  function copyPre(btn) {
+    const code = btn.parentElement.querySelector('code');
+    const text = code.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '已复制 ✓';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove('copied');
+      }, 1500);
+    });
+  }
+
+  /* TOC 滚动高亮（简单版） */
+  const links = document.querySelectorAll('aside.toc nav a');
+  const map = new Map();
+  links.forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (target) map.set(target, a);
+  });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && map.has(e.target)) {
+        links.forEach(a => a.style.background = '');
+        const a = map.get(e.target);
+        a.style.background = 'var(--accentBg)';
+        a.style.color = 'var(--accentDark)';
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+  map.forEach((_, sec) => io.observe(sec));
+</script>
+</body>
+</html>

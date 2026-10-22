@@ -4,12 +4,22 @@ import type { Agent, Category, AgentsData, TrendingData } from './types';
 import Hero from './components/Hero';
 import Spotlight from './components/Spotlight';
 import TrendingGitHub from './components/TrendingGitHub';
-import Trending from './components/Trending';
-import CategoryGrid from './components/CategoryGrid';
 import Sidebar from './components/Sidebar';
 import AgentCard from './components/AgentCard';
 import AgentDetailModal from './components/AgentDetailModal';
 import Tutorials from './components/Tutorials';
+import BackToPortal from './components/BackToPortal';
+
+// 侧栏固定样式：?nav=minimal 切到精简版，默认 sticky 常驻列表
+function resolveNavVariant(): 'sticky' | 'minimal' {
+  try {
+    return new URLSearchParams(window.location.search).get('nav') === 'minimal'
+      ? 'minimal'
+      : 'sticky';
+  } catch {
+    return 'sticky';
+  }
+}
 
 function formatStars(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
@@ -28,6 +38,7 @@ export default function App() {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [view, setView] = useState<'home' | 'tutorials'>('home');
+  const navVariant = resolveNavVariant();
 
   // 搜索栏 UX：searchQuery 从「无」到「有」时自动滚动到结果区（仅首次触发，避免逐字输入时反复跳动）
   const wasSearchingRef = useRef(false);
@@ -43,7 +54,7 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/data/agents.json')
+    fetch(`${import.meta.env.BASE_URL}data/agents.json`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
@@ -67,7 +78,7 @@ export default function App() {
 
   // 加载 GitHub Trending 数据
   useEffect(() => {
-    fetch('/data/trending.json')
+    fetch(`${import.meta.env.BASE_URL}data/trending.json`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
@@ -188,16 +199,20 @@ export default function App() {
 
   if (loadError || !data) {
     return (
-      <div className="min-h-screen bg-paper flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-ink mb-2">数据加载失败</p>
-          <p className="text-xs text-ink3 font-mono">{loadError || '未知错误'}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 rounded-md bg-accent px-4 py-2 text-sm text-white hover:bg-accent/80 transition-colors"
-          >
-            重试
-          </button>
+      <div className="min-h-screen bg-paper">
+        {/* 数据加载失败时 Sidebar 不渲染，此处单独提供门户返回入口，避免用户被困在错误页 */}
+        <BackToPortal />
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <p className="text-ink mb-2">数据加载失败</p>
+            <p className="text-xs text-ink3 font-mono">{loadError || '未知错误'}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 rounded-md bg-accent px-4 py-2 text-sm text-white hover:bg-accent/80 transition-colors"
+            >
+              重试
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -224,6 +239,7 @@ export default function App() {
         currentView={view}
         onNavigateHome={handleNavigateHome}
         onNavigateHomeCategory={handleNavigateHomeCategory}
+        variant={navVariant}
       />
 
       {/* 移动端汉堡按钮 */}
@@ -240,7 +256,7 @@ export default function App() {
         {/* 备案信息横条：工信部要求首页底部显示备案号，此处提升到首屏顶部提高可信度 */}
         <div className="border-b border-line bg-paper/60">
           <div className="container-x flex items-center justify-center gap-3 py-2 text-xs text-ink3">
-            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-sage" />
             <span>已通过 ICP 备案</span>
             <span className="text-line2">·</span>
             <a
@@ -250,7 +266,22 @@ export default function App() {
               className="font-mono tracking-wider hover:text-accent transition-colors"
               title="工信部 ICP 备案查询"
             >
-              粤ICP备2026107109号
+              粤ICP备2026107109号-1
+            </a>
+            <span className="text-line2">·</span>
+            <a
+              href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33019202003186"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 font-mono tracking-wider hover:text-accent transition-colors"
+              title="公安联网备案查询"
+            >
+              <img
+                src="https://www.beian.gov.cn/img/ghs.png"
+                alt="公安备案图标"
+                className="h-3.5 w-3.5"
+              />
+              浙公网安备33019202003186号
             </a>
           </div>
         </div>
@@ -258,24 +289,6 @@ export default function App() {
         {view === 'home' && (
         <>
           <Hero />
-
-        <CategoryGrid
-          categories={categories}
-          agentCounts={agentCounts}
-          onSelect={handleSidebarCategoryChange}
-        />
-
-        {/* GitHub Trending 热点区块（优先），无数据时回退编辑精选 */}
-        {trendingData && trendingData.items.length > 0 ? (
-          <TrendingGitHub
-            items={trendingData.items}
-            onItemClick={(item) => window.open(item.url, '_blank', 'noopener')}
-          />
-        ) : (
-          <Spotlight agents={featuredAgents} categoryMap={categoryMap} onAgentClick={setSelectedAgent} />
-        )}
-
-        <Trending agents={agents} onAgentClick={setSelectedAgent} />
 
         <section id="explore" className="border-b border-line">
           <div className="container-x py-10">
@@ -288,7 +301,7 @@ export default function App() {
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5">
-                  <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="inline-block h-2 w-2 rounded-full bg-sage" />
                   <span className="text-xs text-ink2">完整程序·调用API即可</span>
                 </div>
                 <span className="font-mono text-sm text-ink3 tnum">
@@ -318,6 +331,16 @@ export default function App() {
             )}
           </div>
         </section>
+
+        {/* GitHub Trending 热点区块（优先），无数据时回退编辑精选 —— 已下移：首页首屏优先展示完整项目列表 */}
+        {trendingData && trendingData.items.length > 0 ? (
+          <TrendingGitHub
+            items={trendingData.items}
+            onItemClick={(item) => window.open(item.url, '_blank', 'noopener')}
+          />
+        ) : (
+          <Spotlight agents={featuredAgents} categoryMap={categoryMap} onAgentClick={setSelectedAgent} />
+        )}
 
         {/* 底部统计区块 · Bottom Stats */}
         <section className="border-b border-line bg-paper">
@@ -358,7 +381,7 @@ export default function App() {
         </section>
 
         {/* 赞助推荐 · Sponsor */}
-        <section className="border-b border-line bg-white/40">
+        <section className="border-b border-line bg-accent-bg/40">
           <div className="container-x py-10">
             <a
               href="https://cloud.siliconflow.cn/i/kqBmwIyZ"
@@ -368,7 +391,7 @@ export default function App() {
             >
               <div className="flex items-center gap-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-md bg-gradient-to-br from-accent/20 to-accent/5">
-                  <span className="text-lg">🎁</span>
+                  <span className="text-lg text-accent">◈</span>
                 </div>
                 <div>
                   <div className="font-medium text-ink group-hover:text-accent transition-colors">
@@ -409,7 +432,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* 备案信息：工信部要求悬挂 ICP 备案号并链至 beian.miit.gov.cn */}
+            {/* 备案信息：工信部 ICP 备案号悬挂于 beian.miit.gov.cn；公安联网备案号悬挂于 beian.gov.cn 并附官方盾牌图标 */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-line pt-6 text-sm text-ink3">
               <a
                 href="https://beian.miit.gov.cn/"
@@ -417,7 +440,21 @@ export default function App() {
                 rel="noopener noreferrer"
                 className="hover:text-accent transition-colors"
               >
-                粤ICP备2026107109号
+                粤ICP备2026107109号-1
+              </a>
+              <a
+                href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33019202003186"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-accent transition-colors"
+                title="公安联网备案查询"
+              >
+                <img
+                  src="https://www.beian.gov.cn/img/ghs.png"
+                  alt="公安备案图标"
+                  className="h-4 w-4"
+                />
+                浙公网安备33019202003186号
               </a>
             </div>
           </div>

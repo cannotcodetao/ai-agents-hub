@@ -40,3 +40,8 @@ scripts/set-yesterday-baseline.mjs
 # Backup & scrape artifacts
 *.bak
 temp/trending.html
+_deploy/
+
+# 本地工具产物与工作区元数据（不入库）
+.trae-html-share-packages/
+.workbuddy/

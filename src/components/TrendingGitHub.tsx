@@ -76,7 +76,7 @@ export default function TrendingGitHub({ items, onItemClick }: TrendingGitHubPro
 
                   {/* 今日新增 */}
                   {item.starsToday > 0 && (
-                    <span className="inline-flex items-center gap-1 text-emerald-600">
+                    <span className="inline-flex items-center gap-1 text-sage">
                       <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor">
                         <path fillRule="evenodd" d="M8 1a.75.75 0 0 1 .75.75v6.75H14a.75.75 0 0 1 0 1.5H8.75v5.25a.75.75 0 0 1-1.5 0V10H1.25a.75.75 0 0 1 0-1.5h6V1.75A.75.75 0 0 1 8 1Z" />
                       </svg>

@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react';
 import { Search, X, ArrowDownUp } from 'lucide-react';
 import type { Category } from '../types';
+import BackToPortal from './BackToPortal';
 
 interface SidebarProps {
   search: string;
@@ -23,23 +24,26 @@ interface SidebarProps {
   onNavigateHome?: (anchor: string) => void;
   /** 在教程页点击分类时，先切回首页再执行分类筛选与滚动（不传递则退回原 onCategoryChange） */
   onNavigateHomeCategory?: (id: string) => void;
+  /** 侧栏分类固定样式：sticky=常驻列表（保留顶部快捷导航）；minimal=精简顶部快捷导航，分类成唯一常驻导航 */
+  variant?: 'sticky' | 'minimal';
 }
 
-// 分类色点 · 参考 skills-report.html 的多色谱系，每类一个识别色
+// 分类色点 · Editorial Ink 色系（与 skills-report.html 同一套色相）
+// 注：技能模板原色为深底设计，本站浅底，故统一加深一档以保证 8px 色点可辨识（色相不变）
 const CAT_COLORS: Record<string, string> = {
-  coding: '#C8462C',        // accent · 编程代码
-  framework: '#6FA8C9',     // sky · 框架平台
-  video: '#4AC0A8',          // teal · 视频剪辑
-  document: '#B08FC7',       // violet · 文档撰写
-  presentation: '#E8A838',   // amber · PPT制作
-  content: '#D97A7A',        // rose · 账号内容
-  productivity: '#7FB685',   // sage · 办公效率
-  multimodal: '#C97A4A',     // copper · 多模态Agent
-  skills: '#A8A84A',         // olive · Skills生态
-  browser: '#6FA8C9',        // sky · 浏览器自动化
-  entrepreneur: '#E8A838',   // amber · 创业顾问
-  humanize: '#7FB685',       // sage · 去AI味道
-  avatar: '#9B6FB6',          // violet-2 · 虚拟形象
+  coding: '#B45309',        // accent · 编程代码
+  framework: '#3E7FA3',     // sky · 框架平台
+  video: '#2E8C78',         // teal · 视频剪辑
+  document: '#8A63A3',      // violet · 文档撰写
+  presentation: '#C9860F',  // amber · PPT制作
+  content: '#B85C5C',       // rose · 账号内容
+  productivity: '#4F7A55',  // sage · 办公效率
+  multimodal: '#A85F2E',    // copper · 多模态Agent
+  skills: '#7E7E22',        // olive · Skills生态
+  browser: '#3E7FA3',       // sky · 浏览器自动化
+  entrepreneur: '#C9860F',  // amber · 创业顾问
+  humanize: '#4F7A55',      // sage · 去AI味道
+  avatar: '#7A4F94',        // violet-2 · 虚拟形象
 };
 
 function formatStars(n: number): string {
@@ -53,6 +57,7 @@ export default function Sidebar({
   activeCategory, onCategoryChange, categories, agentCounts,
   totalCount, resultCount, totalStars, isOpen, onClose, onTutorials,
   currentView = 'home', onNavigateHome, onNavigateHomeCategory,
+  variant = 'sticky',
 }: SidebarProps) {
   // 快捷导航：锚点区块只渲染在首页，教程页点击需先切回首页再滚动
   const goAnchor = (e: MouseEvent<HTMLAnchorElement>, anchor: string) => {
@@ -89,6 +94,9 @@ export default function Sidebar({
         }`}
         aria-label="侧边导航"
       >
+        {/* Phase 42 门户返回入口：见 BackToPortal，仅当从门户首页进入时才渲染 */}
+        <BackToPortal />
+
         {/* 顶部站点标题 */}
         <div className="border-b border-line px-6 py-6">
           <h1 className="heading-display text-xl text-ink">
@@ -122,35 +130,41 @@ export default function Sidebar({
           </div>
         </div>
 
-        {/* 快捷导航：搜索栏下方的核心入口 */}
-        <div className="px-4 pb-3">
-          <a
-            href="#trending-github"
-            onClick={(e) => goAnchor(e, '#trending-github')}
-            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-ink3 transition-colors hover:bg-white hover:text-accent"
-            title={currentView === 'tutorials' ? '返回首页并跳转到 GitHub 今日趋势' : '今日 GitHub 趋势热点'}
-          >
-            <span className="text-accent">↗</span>
-            <span>GitHub 今日趋势</span>
-          </a>
-          <a
-            href="#trending"
-            onClick={(e) => goAnchor(e, '#trending')}
-            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-ink3 transition-colors hover:bg-white hover:text-accent"
-            title={currentView === 'tutorials' ? '返回首页并跳转到趋势榜' : '项目趋势榜（按 Stars）'}
-          >
-            <span className="text-accent">★</span>
-            <span>趋势榜</span>
-          </a>
-          <button
-            onClick={() => onTutorials()}
-            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-ink3 transition-colors hover:bg-white hover:text-accent"
-            title="工具下载 + 安装 + 免费 Token 配置教程"
-          >
-            <span className="text-accent">▣</span>
-            <span>入门教程</span>
-          </button>
-        </div>
+        {/* 快捷导航：与下方分类项同尺寸（px-3 py-2 / text-sm / 同宽度），文字加深更醒目。
+            sticky 版：保留「GitHub 今日趋势」锚点跳转 + 「入门教程」路由切换；
+            minimal 版：去掉顶部锚点快捷导航，仅保留「入门教程」路由切换，让分类成为侧栏唯一常驻导航 */}
+        {variant === 'sticky' ? (
+          <div className="px-3 pb-3">
+            <a
+              href="#trending-github"
+              onClick={(e) => goAnchor(e, '#trending-github')}
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-ink2 transition-colors hover:bg-white hover:text-accent"
+              title={currentView === 'tutorials' ? '返回首页并跳转到 GitHub 今日趋势' : '今日 GitHub 趋势热点'}
+            >
+              <span className="text-accent">↗</span>
+              <span>GitHub 今日趋势</span>
+            </a>
+            <button
+              onClick={() => onTutorials()}
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-medium text-ink2 transition-colors hover:bg-white hover:text-accent"
+              title="工具下载 + 安装 + 免费 Token 配置教程"
+            >
+              <span className="text-accent">▣</span>
+              <span>入门教程</span>
+            </button>
+          </div>
+        ) : (
+          <div className="px-3 pb-3">
+            <button
+              onClick={() => onTutorials()}
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-medium text-ink2 transition-colors hover:bg-white hover:text-accent"
+              title="工具下载 + 安装 + 免费 Token 配置教程"
+            >
+              <span className="text-accent">▣</span>
+              <span>入门教程</span>
+            </button>
+          </div>
+        )}
 
         {/* 排序切换 */}
         <div className="flex items-center gap-2 px-6 pb-3">
@@ -179,6 +193,10 @@ export default function Sidebar({
 
         {/* 分类 TOC */}
         <nav className="flex-1 overflow-y-auto px-3 pb-4">
+          {/* sticky 子标题：滚动分类列表时始终钉在顶部，强化「分类常驻」观感 */}
+          <div className="sticky top-0 z-10 -mx-3 bg-paper px-3 pb-2 pt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-ink3">
+            分类浏览
+          </div>
           <button
             onClick={() => handleCategoryClick('all')}
             className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${

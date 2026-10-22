@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>宝塔安全加固手把手教程 · ai-agents-hub</title>
+<style>
+  :root {
+    --bg: #f5f6fa; --card: #fff; --ink: #1a1a2e; --ink2: #4a4a68; --ink3: #8888a8;
+    --line: #e2e4ea; --accent: #3b82f6; --warn: #f59e0b; --danger: #ef4444; --ok: #10b981;
+    --bt-dark: #1d2330; --bt-sidebar: #262d3d; --bt-green: #20c069;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.7; padding: 24px 16px; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+
+  /* Header */
+  header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; border-radius: 14px; padding: 28px 30px; margin-bottom: 28px; }
+  header h1 { margin: 0 0 8px; font-size: 24px; }
+  header .sub { color: #94a3b8; font-size: 13px; margin-top: 10px; }
+  header .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  header .tag { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); padding: 3px 12px; border-radius: 999px; font-size: 12px; }
+
+  /* Alert box */
+  .alert { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 10px; padding: 16px 20px; font-size: 13.5px; margin-bottom: 24px; color: #92400e; }
+  .alert.danger { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+  .alert b { color: inherit; }
+
+  /* Section */
+  h2 { font-size: 19px; margin: 32px 0 14px; padding-left: 12px; border-left: 4px solid var(--accent); }
+  h3 { font-size: 15px; margin: 18px 0 8px; color: var(--ink); }
+
+  /* Step card */
+  .step-card { background: var(--card); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-bottom: 20px; overflow: hidden; }
+  .step-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: #f8f9fc; border-bottom: 1px solid var(--line); }
+  .step-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; flex-shrink: 0; }
+  .num-high { background: var(--danger); } .num-mid { background: var(--warn); } .num-low { background: #94a3b8; }
+  .step-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .step-badge { font-size: 11px; padding: 2px 10px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
+  .badge-high { background: #fee2e2; color: #dc2626; } .badge-mid { background: #fef3c7; color: #d97706; } .badge-low { background: #f1f5f9; color: #6b7280; }
+  .step-body { padding: 16px 18px; }
+
+  /* Nav path indicator */
+  .nav-path { display: inline-flex; align-items: center; gap: 6px; background: #eff0f6; border-radius: 8px; padding: 7px 14px; font-size: 13px; margin-bottom: 12px; border: 1px solid #e2e4ea; }
+  .nav-path .arrow { color: var(--accent); font-weight: 700; }
+  .nav-path .item { color: var(--accent); font-weight: 600; }
+  .nav-path .current { color: var(--ink); }
+
+  /* BT Panel mock sidebar */
+  .bt-mock { background: var(--bt-dark); border-radius: 10px; overflow: hidden; margin: 12px 0; font-size: 13px; }
+  .bt-mock-header { background: var(--bt-sidebar); padding: 10px 14px; color: #8892a8; font-size: 12px; display: flex; justify-content: space-between; }
+  .bt-mock-body { padding: 8px 0; }
+  .bt-item { display: flex; align-items: center; gap: 10px; padding: 7px 16px; color: #c8ccd4; cursor: default; transition: background .15s; }
+  .bt-item:hover { background: rgba(255,255,255,0.05); }
+  .bt-item.active { background: rgba(59,130,246,0.15); color: #60a5fa; border-right: 3px solid var(--accent); }
+  .bt-icon { width: 18px; text-align: center; font-size: 14px; }
+  .bt-highlight { position: relative; }
+  .bt-highlight::after { content: '← 点这里'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--bt-green); font-size: 11px; font-weight: 700; animation: blink 1.5s infinite; }
+  @keyframes blink { 50% { opacity: 0.4; } }
+
+  /* Screenshot placeholder */
+  .ss-placeholder { border: 2px dashed #cbd5e1; border-radius: 10px; padding: 30px; text-align: center; color: #94a3b8; margin: 12px 0; background: #fafbfd; }
+  .ss-placeholder .icon { font-size: 36px; margin-bottom: 8px; }
+  .ss-placeholder .hint { font-size: 12.5px; color: #a1a8b8; }
+  .ss-placeholder .action { display: inline-block; margin-top: 8px; padding: 5px 14px; background: #eff0f6; border-radius: 6px; font-size: 12px; color: var(--accent); font-weight: 600; }
+
+  /* Code block */
+  pre { background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.55; margin: 10px 0; }
+  code { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+  .cmd-block { position: relative; }
+  .copy-hint { position: absolute; top: 6px; right: 8px; font-size: 10px; color: #585b70; pointer-events: none; }
+
+  /* Step list inside card */
+  .ol-steps { margin: 8px 0; padding-left: 20px; }
+  .ol-steps li { margin: 6px 0; font-size: 13.5px; }
+  .ol-steps li b { color: var(--ink); }
+
+  /* Verify box */
+  .verify-box { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px 16px; margin-top: 12px; font-size: 13px; color: #047857; }
+  .verify-box::before { content: '✅ 验证方法：'; font-weight: 700; }
+
+  /* Warn box */
+  .warn-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 16px; margin-top: 12px; font-size: 13px; color: #92400e; }
+  .warn-box::before { content: '⚠️ 注意：'; font-weight: 700; }
+
+  /* TOC */
+  .toc { background: var(--card); border-radius: 12px; padding: 18px 22px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .toc h3 { margin: 0 0 10px; font-size: 15px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px; }
+  .toc a { display: block; padding: 5px 10px; border-radius: 6px; font-size: 13px; color: var(--ink2); text-decoration: none; transition: background .15s; }
+  .toc a:hover { background: #eff0f6; color: var(--accent); }
+  .toc-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .dot-high { background: var(--danger); } .dot-mid { background: var(--warn); } .dot-low { background: #94a3b8; }
+
+  footer { text-align: center; color: var(--ink3); font-size: 12px; margin-top: 40px; padding: 20px 0; }
+  @media print { body { background:#fff; padding:0; } .step-card,.toc{box-shadow:none;border:1px solid #ddd;} .ss-placeholder{display:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🔒 宝塔面板安全加固 · 手把手教程</h1>
+  <p>服务器 <code>124.221.166.181</code> · OpenCloudOS 9 · 宝塔企业版 v1.8.1</p>
+  <p>站点：ai-agents-hub（<code>/www/wwwroot/ai-agents_hub</code>）· 风险总数：<b style="color:#ef4444">19 → 目标 0</b></p>
+  <div class="tags">
+    <span class="tag">Nginx 纯静态站</span>
+    <span class="tag">手动执行</span>
+    <span class="tag">2026-08-07 定稿</span>
+  </div>
+  <div class="sub">
+    使用说明：每张「截图占位框」标注了需要你截取的宝塔界面。执行到对应步骤时，按描述截图粘贴到框内位置即可。
+    教程中的「宝塔路径」全部基于你的实际界面（见下方导航参考）。
+  </div>
+</header>
+
+<!-- ═══════════════ 执行前必读 ═══════════════ -->
+<div class="alert danger">
+  <b>🚨 执行前必读（防止锁死自己）</b>
+  <ol style="margin:8px 0 0;padding-left:20px;">
+    <li><b>开防火墙之前，必须先放行端口！</b>否则 SSH / 面板全断，只能去云厂商控制台用 VNC 救援。</li>
+    <li><b>改 SSH 配置后，开一个新终端测试能登录，再关旧连接。</b></li>
+    <li><b>改 sudoers 前，确认你有另一个可用的 sudo 用户。</b></li>
+    <li><b>建议顺序：</b>先做低风险项练手 → 再做中风险 → 最后做高危（防火墙、sudoers）。</li>
+  </ol>
+</div>
+
+<!-- ═══════════════ 宝塔界面导航参考 ═══════════════ -->
+<h2>📋 你的宝塔面板界面（导航参考）</h2>
+
+<div class="ss-placeholder">
+  <div class="icon">📸</div>
+  <div><b>截图 0 · 宝塔首页概览</b></div>
+  <div class="hint">你已经发过这张了——首页显示 安全风险 = 19。后续教程里的路径都从左侧菜单出发。</div>
+</div>
+
+<p>根据你的截图，左侧菜单结构如下（<b style="color:var(--accent)">蓝色高亮</b> = 本教程会频繁用到的入口）：</p>
+
+<div class="bt-mock">
+  <div class="bt-mock-header"><span>124.221.166.181</span><span>OpenCloudOS 9 · 企业版</span></div>
+  <div class="bt-mock-body">
+    <div class="bt-item"><span class="bt-icon">🏠</span>首页</div>
+    <div class="bt-item"><span class="bt-icon">🌐</span>网站</div>
+    <div class="bt-item"><span class="bt-icon">🗄️</span>数据库</div>
+    <div class="bt-item"><span class="bt-icon">🐳</span>Docker</div>
+    <div class="bt-item"><span class="bt-icon">📊</span>监控</div>
+    <div class="bt-item bt-highlight active"><span class="bt-icon">🛡️</span><b>安全</b></div>
+    <div class="bt-item"><span class="bt-icon">🔥</span>WAF</div>
+    <div class="bt-item"><span class="bt-icon">📁</span>文件</div>
+    <div class="bt-item"><span class="bt-icon">📜</span>日志</div>
+    <div class="bt-item"><span class="bt-icon">👥</span>多用户</div>
+    <div class="bt-item"><span class="bt-icon">💻</span>终端</div>
+    <div class="bt-item"><span class="bt-icon">⏰</span>计划任务</div>
+    <div class="bt-item"><span class="bt-icon">📦</span>软件商店</div>
+  </div>
+</div>
+<p style="font-size:12.5px;color:var(--ink3)">↑ 上图是左侧菜单的简化示意。<b style="color:var(--bt-green)">「安全」</b>是本教程最常用的入口，大部分操作都在这里完成。另外「终端」用于执行 SSH 命令，「软件商店」用于管理 PHP/MySQL 插件。</p>
+
+<!-- ═══════════════ 目录 ═══════════════ -->
+<h2>📑 全部 19 项目录（按推荐执行顺序排列）</h2>
+<div class="toc">
+  <h3>点击跳转</h3>
+  <div class="toc-grid">
+    <a href="#s09"><span class="toc-dot dot-mid"></span>#09 SSH 空闲超时</a>
+    <a href="#s10"><span class="toc-dot dot-mid"></span>#10 SSH 登录超时</a>
+    <a href="#s13"><span class="toc-dot dot-mid"></span>#13 SSH Protocol 2</a>
+    <a href="#s04"><span class="toc-dot dot-mid"></span>#04 改面板端口</a>
+    <a href="#s02"><span class="toc-dot dot-high"></span>#02 开系统防火墙</a>
+    <a href="#s14"><span class="toc-dot dot-high"></span>#14 sudoers NOPASSWD</a>
+    <a href="#s01"><span class="toc-dot dot-mid"></span>#01 SUID/SGID 文件</a>
+    <a href="#s06"><span class="toc-dot dot-mid"></span>#06 密码复用限制</a>
+    <a href="#s11"><span class="toc-dot dot-mid"></span>#11 密码复杂度</a>
+    <a href="#s12"><span class="toc-dot dot-mid"></span>#12 密码修改间隔</a>
+    <a href="#s03"><span class="toc-dot dot-mid"></span>#03 MySQL 3306</a>
+    <a href="#s07"><span class="toc-dot dot-low"></span>#07 PHP 错误提示</a>
+    <a href="#s16"><span class="toc-dot dot-low"></span>#16 卸载 telnet</a>
+    <a href="#s17"><span class="toc-dot dot-low"></span>#17 命令行超时</a>
+    <a href="#s08"><span class="toc-dot dot-low"></span>#08 禁 Ping</a>
+    <a href="#s19"><span class="toc-dot dot-low"></span>#19 SYN Cookie</a>
+    <a href="#s18"><span class="toc-dot dot-low"></span>#18 wheel su 限制</a>
+    <a href="#s15"><span class="toc-dot dot-low"></span>#15 TCP Wrappers</a>
+    <a href="#s05"><span class="toc-dot dot-low"></span>#05 面板登录告警</a>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!--                    第 1 组：SSH 加固（先做，练手）              -->
+<!-- ============================================================ -->
+<h2>第 1 组 · SSH 加固（低风险练手，改完立刻验证）</h2>
+<p style="color:var(--ink3);font-size:13px;">这 3 项都是改 SSH 配置文件 + 重启服务，操作模式相同。做完一组就有手感了。</p>
+
+
+<!-- ═══ #09 ═══ -->
+<div class="step-card" id="s09">
+  <div class="step-header">
+    <div class="step-num num-mid">09</div>
+    <div class="step-title">SSH 空闲超时 = 0（应设为 600-900 秒）</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">打开命令行界面</span>
+    </div>
+
+    <p><b>这是什么？</b>SSH 默认不会自动断开空闲连接。如果有人拿到了你的 SSH 会话（比如你忘关终端），他们可以一直用下去。</p>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>点左侧 <b>「终端」</b>，进入命令行界面</li>
+      <li>输入以下命令打开 SSH 配置文件：
+        <pre class="cmd-block"><span class="copy-hint">复制整行</span><code>nano /etc/ssh/sshd_config</code></pre>
+      </li>
+      <li>在文件里找到 <code>ClientAliveInterval</code> 这一行（可能被 <code>#</code> 注释掉了）
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 09-A · sshd_config 文件内容</b></div>
+          <div class="hint">截取 nano 编辑器里 sshd_config 的内容，展示 ClientAliveInterval 所在行附近</div>
+        </div>
+      </li>
+      <li>把这一行改成（或新增一行）：
+        <pre class="cmd-block"><code>ClientAliveInterval 600</code></pre>
+      </li>
+      <li>保存退出：<b>Ctrl+O</b> 回车确认 → <b>Ctrl+X</b> 退出</li>
+      <li>重启 SSH 服务使配置生效：
+        <pre class="cmd-block"><code>systemctl restart sshd</code></pre>
+      </li>
+      <li><b>⚠️ 不要关闭当前终端！</b>新开一个终端窗口，尝试 SSH 登录服务器，确认能连上再继续</li>
+    </ol>
+
+    <div class="verify-box">新终端能正常 SSH 登录 → 且闲置约 10 分钟后会自动断开（说明生效了）</div>
+  </div>
+</div>
+
+
+<!-- ═══ #10 ═══ -->
+<div class="step-card" id="s10">
+  <div class="step-header">
+    <div class="step-num num-mid">10</div>
+    <div class="step-title">未启用 SSH 登录超时（LoginGraceTime）</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <p><b>这是什么？</b>LoginGraceTime 控制用户必须在多少秒内完成登录认证。默认无限制，暴力破解程序可以慢慢试密码。</p>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>在终端输入：
+        <pre class="cmd-block"><code>nano /etc/ssh/sshd_config</code></pre>
+      </li>
+      <li>找到或添加 <code>LoginGraceTime</code>，设为：
+        <pre class="cmd-block"><code>LoginGraceTime 60</code></pre>
+      </li>
+      <li><b>Ctrl+O</b> 保存 → <b>Ctrl+X</b> 退出</li>
+      <li>重启：
+        <pre class="cmd-block"><code>systemctl restart sshd</code></pre>
+      </li>
+      <li>同 #09，新终端验证可登录</li>
+    </ol>
+
+    <div class="verify-box">新终端 SSH 登录正常 → 如果 60 秒内不输密码就会断开</div>
+  </div>
+</div>
+
+
+<!-- ═══ #13 ═══ -->
+<div class="step-card" id="s13">
+  <div class="step-header">
+    <div class="step-num num-mid">13</div>
+    <div class="step-title">SSH 未明确使用 Protocol 2</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <p><b>这是什么？</b>SSH Protocol 1 已过时且有已知漏洞。现代 OpenSSH 默认只用 Protocol 2，但配置文件里没写明的话扫描器会报。</p>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>终端输入：
+        <pre class="cmd-block"><code>nano /etc/ssh/sshd_config</code></pre>
+      </li>
+      <li>在文件任意位置添加一行：
+        <pre class="cmd-block"><code>Protocol 2</code></pre>
+      </li>
+      <li>保存退出 → 重启：
+        <pre class="cmd-block"><code>systemctl restart sshd</code></pre>
+      </li>
+    </ol>
+
+    <div class="warn-box">现代 Linux 的 OpenSSH 通常已默认只支持 Protocol 2。这步主要是让扫描器不报错，实际安全增益有限。</div>
+    <div class="verify-box">重新跑一次宝塔安全扫描，#13 应消失或降级</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!--                 第 2 组：面板与防火墙（高危核心）            -->
+<!-- ============================================================ -->
+<h2>第 2 组 · 面板端口 + 系统防火墙（⚠️ 高危，仔细看警示）</h2>
+
+
+<!-- ═══ #04 ═══ -->
+<div class="step-card" id="s04">
+  <div class="step-header">
+    <div class="step-num num-mid">04</div>
+    <div class="step-title">面板端口为默认 8888</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">设置</span> <span class="arrow">(右上角)</span> <span class="arrow">→</span> <span class="current">面板设置</span>
+    </div>
+
+    <p><b>这是什么？</b>宝塔默认用 8888 端口，全网都知道。攻击者可以针对这个端口扫 + 暴力破解。</p>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>点宝塔面板<b>右上角的齿轮图标 ⚙️「设置」</b></li>
+      <li>找到「<b>面板端口</b>」输入框，当前值是 <code>8888</code>
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 04-A · 面板设置页面</b></div>
+          <div class="hint">截取「设置」页面，展示「面板端口」输入框所在位置（通常在顶部区域）</div>
+        </div>
+      </li>
+      <li>改成高位自定义端口，例如 <code>28888</code>（范围建议 10000-65535）</li>
+      <li>点「<b>保存</b>」</li>
+      <li><b>重要：</b>如果你的云服务器有安全组（腾讯云/阿里云等），去云控制台的安全组规则里，<b>先放行新端口 28888</b>，再考虑是否删除 8888</li>
+      <li>保存后宝塔会提示用新端口访问，记下新端口号</li>
+    </ol>
+
+    <div class="warn-box">改完后旧端口立即失效！如果安全组没放行新端口，你会无法访问面板。建议：先加安全组规则 → 改端口 → 测试新端口能访问 → 再删旧端口规则。</div>
+    <div class="verify-box">浏览器访问 <code>http://124.221.166.181:28888/xxxx</code>（xxxx 是你的安全入口）能正常打开面板</div>
+  </div>
+</div>
+
+
+<!-- ═══ #02 ═══ -->
+<div class="step-card" id="s02">
+  <div class="step-header">
+    <div class="step-num num-high">02</div>
+    <div class="step-title">未开启系统防火墙（所有端口暴露）</div>
+    <div class="step-badge badge-high">高危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">安全</span> <span class="arrow">→</span> <span class="current">系统防火墙</span>
+    </div>
+
+    <p><b>这是什么？</b>系统防火墙没开 = 服务器所有端口都对互联网开放。这是最基础的一道防线。</p>
+
+    <h3>操作步骤（严格按顺序！）</h3>
+    <ol class="ol-steps">
+      <li>点左侧 <b>「安全」</b>菜单</li>
+      <li>找到 <b>「系统防火墙」</b>区域
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 02-A · 安全页面 · 系统防火墙区域</b></div>
+          <div class="hint">截取「安全」页面的上半部分，展示「系统防火墙」开关和端口规则列表所在位置</div>
+        </div>
+      </li>
+      <li><b>第一步：添加放行端口规则</b>（在开启防火墙之前！）
+        <br>需要放行的端口：
+        <table style="width:100%;border-collapse:collapse;font-size:13px;margin:8px 0;">
+          <tr style="background:#f8f9fc;"><th style="padding:6px 10px;text-align:left;border:1px solid #e2e4ea;">端口</th><th style="padding:6px 10px;text-align:left;border:1px solid #e2e4ea;">用途</th><th style="padding:6px 10px;text-align:left;border:1px solid #e2e4ea;">备注</th></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e2e4ea;"><code>80</code></td><td style="padding:6px 10px;border:1px solid #e2e4ea;">HTTP 网站</td><td style="padding:6px 10px;border:1px solid #e2e4ea;">必须</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e2e4ea;"><code>443</code></td><td style="padding:6px 10px;border:1px solid #e2e4ea;">HTTPS（如已配）</td><td style="padding:6px 10px;border:1px solid #e2e4ea;">建议</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e2e4ea;"><code>22</code> 或你改过的 SSH 端口</td><td style="padding:6px 10px;border:1px solid #e2e4ea;">SSH 远程登录</td><td style="padding:6px 10px;border:1px solid #e2e4ea;">必须</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e2e4ea;"><code>28888</code>（或你改的面板端口）</td><td style="padding:6px 10px;border:1px solid #e2e4ea;">宝塔面板</td><td style="padding:6px 10px;border:1px solid #e2e4ea;">必须</td></tr>
+        </table>
+      </li>
+      <li>在防火墙的「端口规则」里逐条添加上述端口（协议选 TCP）</li>
+      <li><b>第二步：确认规则列表里有上面这些端口</b>
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 02-B · 防火墙端口规则列表（添加完成后）</b></div>
+          <div class="hint">截取端口规则列表，展示 80 / 443 / SSH端口 / 面板端口 都已在列表中</div>
+        </div>
+      </li>
+      <li><b>第三步：开启防火墙开关</b> — 点击开关按钮
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 02-C · 防火墙已开启状态</b></div>
+          <div class="hint">截取防火墙开关处于「开启」状态的界面</div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="warn-box">
+      <b>🚨 最重要的一条警示：</b>如果你没有提前放行 SSH 端口和面板端口就开了防火墙，<b>你会立刻失去所有连接</b>（SSH 连不上、面板打不开）。唯一的恢复方式是去云厂商控制台用 VNC/远程登录控制台进去关掉防火墙。<br><br>
+      如果你不确定，可以先只放行 22 + 8888（或你改后的端口），开防火墙测试 1 分钟，确认一切正常后再优化。
+    </div>
+    <div class="verify-box">防火墙开关显示「开启」；网站仍能正常访问；SSH 仍能登录；面板仍能用新端口打开</div>
+  </div>
+</div>
+
+
+<!-- ═══ #14 ═══ -->
+<div class="step-card" id="s14">
+  <div class="step-header">
+    <div class="step-num num-high">14</div>
+    <div class="step-title">sudoers 存在 NOPASSWD 标记</div>
+    <div class="step-badge badge-high">高危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <p><b>这是什么？</b>NOPASSWD 意味着某些用户可以用 sudo 执行任何命令而<strong>不需要输入密码</strong>。如果攻击者拿到这个用户的 shell，就直接获得 root 权限。</p>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li><b>先确认你有 root 密码或其他 sudo 用户！</b>这一步改错可能导致无法提权。</li>
+      <li>终端输入，查看当前的 sudoers 内容：
+        <pre class="cmd-block"><code>cat /etc/sudoers</code></pre>
+      </li>
+      <li>找有没有包含 <code>NOPASSWD</code> 的行，类似：
+        <pre class="cmd-block"><code>root    ALL=(ALL)    NOPASSWD: ALL</code></pre>
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 14-A · sudoers 文件内容（cat 输出）</b></div>
+          <div class="hint">截取终端里 cat /etc/sudoers 的输出，高亮含 NOPASSWD 的行</div>
+        </div>
+      </li>
+      <li>同样检查 cloud-init 用户：
+        <pre class="cmd-block"><code>cat /etc/sudoers.d/90-cloud-init-users</code></pre>
+      </li>
+      <li>备份原文件：
+        <pre class="cmd-block"><code>cp /etc/sudoers /etc/sudoers.bak
+cp /etc/sudoers.d/90-cloud-init-users /etc/sudoers.d/90-cloud-init-users.bak</code></pre>
+      </li>
+      <li>用 visudo 安全编辑（比直接 nano 更安全，有语法检查）：
+        <pre class="cmd-block"><code>visudo</code></pre>
+      </li>
+      <li>找到含 <code>NOPASSWD</code> 的行，在行首加 <code>#</code> 注释掉，或者删掉 <code>NOPWD:ALL</code> 部分</li>
+      <li>同样处理 <code>/etc/sudoers.d/90-cloud-init-users</code>：
+        <pre class="cmd-block"><code>visudo -f /etc/sudoers.d/90-cloud-init-users</code></pre>
+      </li>
+      <li>保存后 visudo 会自动检查语法；如果有错会提示你修复</li>
+      <li>验证：执行 <code>sudo whoami</code>，应该要求输入密码而不是直接返回 root</li>
+    </ol>
+
+    <div class="warn-box">
+      <b>90-cloud-init-users</b> 是云厂商（腾讯云）初始化实例时创建的。如果删掉 NOPASSWD 后发现某些自动化脚本需要免密 sudo，可以从备份恢复。<br>
+      <b>最安全的做法</b>：保留 NOPASSWD 但限定为特定命令（如 NOPASSWD: /usr/bin/systemctl restart nginx），而非 ALL。
+    </div>
+    <div class="verify-box"><code>sudo whoami</code> 要求输入密码；<code>sudo -l</code> 不再显示 (NOPASSWD)</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!--                   第 3 组：特权文件与密码策略               -->
+<!-- ============================================================ -->
+<h2>第 3 组 · 特权文件 + 密码策略加固</h2>
+
+
+<!-- ═══ #01 ═══ -->
+<div class="step-card" id="s01">
+  <div class="step-header">
+    <div class="step-num num-mid">01</div>
+    <div class="step-title">存在 SUID/SGID 特权文件</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <p><b>这是什么？</b>SUID/SGID 是 Linux 特殊权限位，允许普通用户以文件所有者/组的身份执行程序。攻击者利用这些文件可以进行权限提升。</p>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>终端依次执行以下命令（去除 SUID）：
+        <pre class="cmd-block"><code>chmod u-s /usr/bin/chage
+chmod u-s /usr/bin/gpasswd
+chmod u-s /usr/bin/chfn
+chmod u-s /usr/bin/chsh
+chmod u-s /usr/bin/newgrp
+chmod u-s /bin/mount
+chmod u-s /bin/umount</code></pre>
+      </li>
+      <li>去除 SGID：
+        <pre class="cmd-block"><code>chmod g-s /usr/bin/write</code></pre>
+      </li>
+    </ol>
+
+    <div class="warn-box">移除 SUID 后，普通用户将无法使用 mount/umount 等命令。确保你通过 root 或 sudo 操作服务器即可，不受影响。</div>
+    <div class="verify-box">执行 <code>find / -perm -4000 -o -perm -2000</code> 后上述文件不再出现在结果中</div>
+  </div>
+</div>
+
+
+<!-- ═══ #06 ═══ -->
+<div class="step-card" id="s06">
+  <div class="step-header">
+    <div class="step-num num-mid">06</div>
+    <div class="step-title">未限制密码重复使用次数</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>备份：
+        <pre class="cmd-block"><code>cp -p /etc/pam.d/system-auth /etc/pam.d/system-auth.bak</code></pre>
+      </li>
+      <li>编辑：
+        <pre class="cmd-block"><code>nano /etc/pam.d/system-auth</code></pre>
+      </li>
+      <li>找到含有 <code>password sufficient</code> 的行，在末尾追加 <code> remember=3</code>
+        <br>例如改成：
+        <pre class="cmd-block"><code>password sufficient pam_unix.so sha512 shadow nullok try_first_pass use_authtok remember=3</code></pre>
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 06-A · system-auth 文件中 password sufficient 行</b></div>
+          <div class="hint">截取 nano 里 system-auth 文件，高亮 password sufficient 那一行（修改前后各一张更好）</div>
+        </div>
+      </li>
+      <li><b>Ctrl+O</b> 保存 → <b>Ctrl+X</b> 退出</li>
+    </ol>
+
+    <div class="verify-box">改密码时，如果新密码和最近 3 次用过的相同，系统会拒绝</div>
+  </div>
+</div>
+
+
+<!-- ═══ #11 ═══ -->
+<div class="step-card" id="s11">
+  <div class="step-header">
+    <div class="step-num num-mid">11</div>
+    <div class="step-title">密码复杂度未设 minclass</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>编辑密码质量配置：
+        <pre class="cmd-block"><code>nano /etc/security/pwquality.conf</code></pre>
+      </li>
+      <li>找到或添加 <code>minclass</code> 行：
+        <pre class="cmd-block"><code>minclass = 3</code></pre>
+      </li>
+      <li>含义：密码至少包含 3 类字符（小写字母 / 大写字母 / 数字 / 特殊符号 中选 3 类）</li>
+      <li>保存退出</li>
+    </ol>
+
+    <div class="verify-box">下次改密码时，如果密码只包含一类或两类字符（如纯数字），会被拒绝</div>
+  </div>
+</div>
+
+
+<!-- ═══ #12 ═══ -->
+<div class="step-card" id="s12">
+  <div class="step-header">
+    <div class="step-num num-mid">12</div>
+    <div class="step-title">密码修改间隔 PASS_MIN_DAYS &lt; 7</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>编辑登录定义：
+        <pre class="cmd-block"><code>nano /etc/login.defs</code></pre>
+      </li>
+      <li>找到 <code>PASS_MIN_DAYS</code>，改为：
+        <pre class="cmd-block"><code>PASS_MIN_DAYS 7</code></pre>
+      </li>
+      <li>对已有 root 账号也生效：
+        <pre class="cmd-block"><code>chage --mindays 7 root</code></pre>
+      </li>
+      <li>保存退出</li>
+    </ol>
+
+    <div class="verify-box">执行 <code>chage -l root</code> 查看，Minimum number of days between password change 应为 7</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!--                     第 4 组：服务清理                        -->
+<!-- ============================================================ -->
+<h2>第 4 组 · 服务清理（MySQL / PHP / telnet）</h2>
+<p style="color:var(--ink3);font-size:13px;">这组需要你判断：这些服务是否真的在被使用？纯静态站理论上不需要。</p>
+
+
+<!-- ═══ #03 ═══ -->
+<div class="step-card" id="s03">
+  <div class="step-header">
+    <div class="step-num num-mid">03</div>
+    <div class="step-title">MySQL 端口 3306 对外开放</div>
+    <div class="step-badge badge-mid">中危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">安全</span> <span class="arrow">→</span> <span class="current">系统防火墙 / 端口规则</span>
+    </div>
+
+    <p><b>这是什么？</b>MySQL 数据库默认监听 3306 端口且允许任意 IP 连接。攻击者可以暴力猜密码。</p>
+
+    <h3>先判断：你是否在用 MySQL？</h3>
+    <ol class="ol-steps">
+      <li>终端执行：
+        <pre class="cmd-block"><code>systemctl status mysqld</code></pre>
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 03-A · MySQL 服务状态</b></div>
+          <div class="hint">截取 systemctl status mysqld 的输出，看 active (running) 还是 inactive/dead</div>
+        </div>
+      </li>
+    </ol>
+
+    <h3>方案 A：不用 MySQL → 关闭 + 删除防火墙规则</h3>
+    <ol class="ol-steps">
+      <li>停止并禁用 MySQL：
+        <pre class="cmd-block"><code>systemctl stop mysqld
+systemctl disable mysqld</code></pre>
+      </li>
+      <li>去「安全 → 系统防火墙 → 端口规则」，删除 3306 的放行规则</li>
+    </ol>
+
+    <h3>方案 B：在用 MySQL → 限定 IP 访问</h3>
+    <ol class="ol-steps">
+      <li>在防火墙端口规则里，把 3306 从「所有 IP」改为仅允许特定 IP（如你的本地出口 IP 或 127.0.0.1）</li>
+      <li>或在 MySQL 配置里绑定地址：
+        <pre class="cmd-block"><code>nano /etc/my.cnf</code></pre>
+        在 [mysqld] 下加 <code>bind-address=127.0.0.1</code>
+      </li>
+    </ol>
+
+    <div class="warn-box">你的站点是纯静态（Nginx 直出 HTML），大概率不需要 MySQL。如果只是宝塔安装时顺带装上的，建议直接关掉（方案 A）。</div>
+    <div class="verify-box">外部扫描 3306 端口不通；或 <code>netstat -tlnp | grep 3306</code> 显示绑定在 127.0.0.1</div>
+  </div>
+</div>
+
+
+<!-- ═══ #07 ═══ -->
+<div class="step-card" id="s07">
+  <div class="step-header">
+    <div class="step-num num-low">07</div>
+    <div class="step-title">PHP 8.2 未关闭错误信息提示</div>
+    <div class="step-badge badge-low">低危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">软件商店</span> <span class="arrow">→</span> <span class="item">已安装</span> <span class="arrow">→</span> <span class="item">PHP 8.2</span> <span class="arrow">→</span> <span class="current">配置修改</span>
+    </div>
+
+    <p><b>这是什么？</b>PHP 的 display_errors 开启时，出错会在网页上显示详细报错信息（含文件路径、代码片段），泄露敏感信息。</p>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>点左侧 <b>「软件商店」</b></li>
+      <li>切换到 <b>「已安装」</b>标签</li>
+      <li>找到 <b>PHP 8.2</b>，点右侧 <b>「设置」</b>
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 07-A · 软件商店 · 已安装 · PHP 8.2</b></div>
+          <div class="hint">截取软件商店「已安装」列表，展示 PHP 8.2 条目及其「设置」按钮位置</div>
+        </div>
+      </li>
+      <li>在弹出的设置页里找 <b>「配置修改」</b></li>
+      <li>搜索 <code>display_errors</code>，把值改为 <code>Off</code>（或取消勾选）
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 07-B · PHP 配置修改页面 · display_errors 所在位置</b></div>
+          <div class="hint">截取配置修改界面，展示 display_errors 选项（修改前后的对比更好）</div>
+        </div>
+      </li>
+      <li>点 <b>「保存」</b></li>
+      <li>可选：如果确认完全不用 PHP，可以在软件商店里直接卸载 PHP 8.2</li>
+    </ol>
+
+    <div class="warn-box">你的纯静态站不需要 PHP。如果只是为了宝塔面板自身运行而装的，关掉 display_errors 就够了。如果想彻底清理，可以考虑卸载（但先确认宝塔不依赖它）。</div>
+    <div class="verify-box">创建一个含错误的 .php 文件访问，不再显示详细错误信息（或直接重跑宝塔扫描 #7 消失）</div>
+  </div>
+</div>
+
+
+<!-- ═══ #16 ═══ -->
+<div class="step-card" id="s16">
+  <div class="step-header">
+    <div class="step-num num-low">16</div>
+    <div class="step-title">已安装 telnet 客户端（明文协议）</div>
+    <div class="step-badge badge-low">低危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>OpenCloudOS 基于 CentOS/RHEL，执行：
+        <pre class="cmd-block"><code>yum remove telnet -y</code></pre>
+      </li>
+      <li>确认已卸载：
+        <pre class="cmd-block"><code>which telnet</code></pre>
+        应该返回 <code>no telnet in ...</code>
+      </li>
+    </ol>
+
+    <div class="verify-box"><code>which telnet</code> 返回「命令不存在」</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!--                      第 5 组：超时与会话                     -->
+<!-- ============================================================ -->
+<h2>第 5 组 · 超时与会话控制</h2>
+
+
+<!-- ═══ #17 ═══ -->
+<div class="step-card" id="s17">
+  <div class="step-header">
+    <div class="step-num num-low">17</div>
+    <div class="step-title">未配置命令行超时退出（TMOUT）</div>
+    <div class="step-badge badge-low">低危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>编辑全局 profile：
+        <pre class="cmd-block"><code>nano /etc/profile</code></pre>
+      </li>
+      <li>在文件末尾追加一行：
+        <pre class="cmd-block"><code>export TMOUT=300</code></pre>
+      </li>
+      <li>使配置立即生效：
+        <pre class="cmd-block"><code>source /etc/profile</code></pre>
+      </li>
+    </ol>
+    <p style="font-size:12.5px;color:var(--ink3)">含义：命令行空闲超过 300 秒（5 分钟）自动退出。等保要求 ≤ 600 秒。</p>
+
+    <div class="verify-box">SSH 登录后什么都不做，等待约 5 分钟应自动断开</div>
+  </div>
+</div>
+
+
+<!-- ═══ #08 ═══ -->
+<div class="step-card" id="s08">
+  <div class="step-header">
+    <div class="step-num num-low">08</div>
+    <div class="step-title">未开启禁 Ping</div>
+    <div class="step-badge badge-low">低危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">安全</span> <span class="arrow">→</span> <span class="current">系统防火墙</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>点左侧 <b>「安全」</b></li>
+      <li>在系统防火墙区域找到 <b>「禁 Ping」</b>开关</li>
+      <li>开启它
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 08-A · 安全页面 · 禁 Ping 开关</b></div>
+          <div class="hint">截取「禁 Ping」开关的位置（开启前后均可）</div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="warn-box">开启后在本地执行 <code>ping 124.221.166.181</code> 会超时/无响应。不影响网站访问。如果你需要 ping 来监控服务器存活，可以不开这项。</div>
+    <div class="verify-box">从其他机器 ping 你的服务器 IP，无响应</div>
+  </div>
+</div>
+
+
+<!-- ═══ #19 ═══ -->
+<div class="step-card" id="s19">
+  <div class="step-header">
+    <div class="step-num num-low">19</div>
+    <div class="step-title">未开启 TCP SYN Cookie 保护</div>
+    <div class="step-badge badge-low">低危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>编辑内核参数：
+        <pre class="cmd-block"><code>nano /etc/sysctl.conf</code></pre>
+      </li>
+      <li>在文件末尾追加：
+        <pre class="cmd-block"><code>net.ipv4.tcp_syncookies = 1</code></pre>
+      </li>
+      <li>使参数立即生效：
+        <pre class="cmd-block"><code>sysctl -p</code></pre>
+      </li>
+    </ol>
+    <p style="font-size:12.5px;color:var(--ink3)">含义：启用 SYN Cookie 可缓解 SYN Flood 类 DDoS 攻击。现代内核大多默认已开启，这步主要是确保配置持久化。</p>
+
+    <div class="verify-box">执行 <code>sysctl net.ipv4.tcp_syncookies</code> 返回 <code>net.ipv4.tcp_syncookies = 1</code></div>
+  </div>
+</div>
+
+
+<!-- ═══ #18 ═══ -->
+<div class="step-card" id="s18">
+  <div class="step-header">
+    <div class="step-num num-low">18</div>
+    <div class="step-title">未禁用 wheel 组外用户 su 为 root</div>
+    <div class="step-badge badge-low">低危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li><b>先确认自己在 wheel 组里：</b>
+        <pre class="cmd-block"><code>groups</code></pre>
+        看输出是否包含 <code>wheel</code>
+      </li>
+      <li>如果不包含，把自己加入：
+        <pre class="cmd-block"><code>usermod -aG wheel $(whoami)</code></pre>
+      </li>
+      <li>编辑 PAM su 配置：
+        <pre class="cmd-block"><code>nano /etc/pam.d/su</code></pre>
+      </li>
+      <li>在文件中添加一行（通常放在 auth 相关行的附近）：
+        <pre class="cmd-block"><code>auth required pam_wheel.so</code></pre>
+      </li>
+      <li>保存退出</li>
+    </ol>
+
+    <div class="warn-box">启用后，只有 wheel 组的用户才能 su 到 root。如果你不在 wheel 组里又没其他 root 途径，就会锁死。务必先执行步骤 1 确认自己在 wheel 组。</div>
+    <div class="verify-box">用非 wheel 组用户执行 <code>su -</code> 应被拒绝；wheel 组用户可以正常 su</div>
+  </div>
+</div>
+
+
+<!-- ═══ #15 ═══ -->
+<div class="step-card" id="s15">
+  <div class="step-header">
+    <div class="step-num num-low">15</div>
+    <div class="step-title">未安装 TCP Wrappers</div>
+    <div class="step-badge badge-low">低危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">左侧菜单</span> <span class="arrow">→</span> <span class="item">终端</span> <span class="arrow">→</span> <span class="current">命令行</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>OpenCloudOS/CentOS 系执行：
+        <pre class="cmd-block"><code>yum install tcp_wrappers -y</code></pre>
+      </li>
+    </ol>
+    <p style="font-size:12.5px;color:var(--ink3)">TCP Wrappers 是较老的访问控制工具，现代系统多已弃用（由 firewalld/iptables 替代）。装上可以让扫描器不报错，实际防护意义有限。可跳过。</p>
+
+    <div class="verify-box">执行 <code>rpm -qa | grep tcp_wrappers</code> 显示已安装</div>
+  </div>
+</div>
+
+
+<!-- ═══ #05 ═══ -->
+<div class="step-card" id="s05">
+  <div class="step-header">
+    <div class="step-num num-low">05</div>
+    <div class="step-title">未开启面板登录告警</div>
+    <div class="step-badge badge-low">低危</div>
+  </div>
+  <div class="step-body">
+    <div class="nav-path">
+      <span class="item">右上角</span> <span class="arrow">→</span> <span class="item">设置 ⚙️</span> <span class="arrow">→</span> <span class="item">告警通知</span> <span class="arrow">→</span> <span class="current">告警列表</span>
+    </div>
+
+    <h3>操作步骤</h3>
+    <ol class="ol-steps">
+      <li>点面板<b>右上角设置 ⚙️</b></li>
+      <li>找到 <b>「告警通知」</b>选项卡</li>
+      <li>点 <b>「告警列表」</b> → <b>「添加任务」</b></li>
+      <li>任务类型选择 <b>「面板登录告警」</b></li>
+      <li>填写接收通知的方式（邮箱 / 微信 / 等）并保存
+        <div class="ss-placeholder">
+          <div class="icon">📸</div>
+          <div><b>截图 05-A · 设置 → 告警通知 → 告警列表</b></div>
+          <div class="hint">截取告警通知设置页面，展示「添加任务」按钮和任务类型下拉框</div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="verify-box">用另一个浏览器/设备登录面板，触发一次告警，确认收到通知</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ 收尾 ═══════════════ -->
+<h2>✅ 执行完毕后</h2>
+<div class="step-card">
+  <div class="step-body">
+    <ol class="ol-steps">
+      <li>回到宝塔首页，点 <b>「安全风险」</b>区域的数字（应该从 19 变小了）</li>
+      <li>重新运行一次安全扫描，记录新的分数和剩余风险数</li>
+      <li>把最终截图发给我，我更新进度文档并标记闭环</li>
+    </ol>
+    <div class="ss-placeholder">
+      <div class="icon">📸</div>
+      <div><b>截图 FINAL · 加固后的安全扫描结果</b></div>
+      <div class="hint">截取宝塔首页概览区，展示「安全风险」的新数字（目标：接近 0）</div>
+    </div>
+  </div>
+</div>
+
+
+<footer>
+  宝塔安全加固手把手教程 · ai-agents-hub 项目文档 · 2026-08-07<br>
+  教程版本 v1.0 · 截图占位符待补充
+</footer>
+
+</div>
+</body>
+</html>
