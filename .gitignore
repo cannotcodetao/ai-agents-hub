@@ -41,6 +41,8 @@ scripts/set-yesterday-baseline.mjs
 *.bak
 temp/trending.html
 _deploy/
+# CI 发布用的中间产物（由 dist/ 复制而来，不进仓库）
+_release/
 
 # 本地工具产物与工作区元数据（不入库）
 .trae-html-share-packages/
